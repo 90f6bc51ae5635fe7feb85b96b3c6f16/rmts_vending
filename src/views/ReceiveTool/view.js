@@ -6,6 +6,7 @@ import "react-simple-keyboard/build/css/index.css";
 import { Link } from 'react-router-dom'
 import { Loading2 } from "../../component/revel-strap/";
 import Swal from "sweetalert2"
+import GLOBAL from "../../GLOBAL";
 import ReceiveToolModel from "../../models/ReceiveToolModel";
 const receiveTool_Model = new ReceiveToolModel();
 
@@ -37,6 +38,11 @@ class ReceiveTool extends Component {
       product_name: '',
       compartmentNull: '',
       stock_layout_code: '',
+      // product_image: {
+      //   src: GLOBAL.BASE_URL.URL_IMG + "default.png",
+      //   name: "",
+      //   file: null,
+      // },
     };
   }
   componentDidMount = () => {
@@ -50,10 +56,13 @@ class ReceiveTool extends Component {
       {
         compartments: query_res.data,
         keyword: '',
+
       });
+    console.log("compartments", this.state.compartments);
   };
 
   _onSelectOpToolUse = async (product_code, product_name) => {
+    const product_image = ''
     const stock = await receiveTool_Model.getStocklayoutByProductCode({ product_code })
     const stockslayoutnull = await receiveTool_Model.getStockNull()
 
@@ -65,9 +74,14 @@ class ReceiveTool extends Component {
         stock_null: stockslayoutnull.data,
         product_name: product_name,
         product_code: product_code,
+        product_image: {
+          src: GLOBAL.BASE_URL.URL_IMG + product_image,
+          name: product_image,
+          file: null,
+        },
       });
     }
-    console.log("product_code", this.state.product_code);
+
 
   };
 
@@ -130,7 +144,13 @@ class ReceiveTool extends Component {
       if (res.require) {
 
         Swal.fire({ title: "บันทึกข้อมูลสำเร็จ !", icon: "success", })
-        this.props.history.push("/receiveTool")
+        // this.props.history.push("/receiveTool")
+        this.setState({
+          current_display: '',
+          compartments: [],
+          keyword: '',
+          tool_qty: '',
+        })
       } else {
         this.setState({
           loading: false,
@@ -327,8 +347,6 @@ class ReceiveTool extends Component {
 
   };
 
-
-
   _showDisplay() {
     const { current_display } = this.state;
     if (current_display === "") {
@@ -379,7 +397,10 @@ class ReceiveTool extends Component {
                           item.product_code,
                           item.product_name
                         )}>
-                        <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                        <CardImg
+                          variant="top"
+                          style={{ width: '150px', height: '150px' }}
+                          src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
                         <CardBody>
                           <p style={{ height: '50px' }}>
                             <CardTitle>{item.product_code}</CardTitle>
@@ -421,8 +442,6 @@ class ReceiveTool extends Component {
     else if (current_display === "firstAddtool") {
       return (
         <div className="container">
-          {" "}
-
           <Row>
             <CardBody>
               <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
@@ -441,7 +460,7 @@ class ReceiveTool extends Component {
                           item.product_name,
                           item.product_code,
                         )}>
-                        <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                        <CardImg variant="top" src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
                         <CardBody>
                           <p style={{ height: '70px' }}>
                             <CardTitle>{item.stock_layout_code}</CardTitle>
@@ -455,7 +474,6 @@ class ReceiveTool extends Component {
                 ))}
               </div>
             </CardBody>
-
           </Row>
           <hr
           />

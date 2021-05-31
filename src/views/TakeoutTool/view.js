@@ -6,6 +6,7 @@ import "react-simple-keyboard/build/css/index.css";
 import { Loading2 } from "../../component/revel-strap";
 import { Link } from 'react-router-dom'
 import Swal from "sweetalert2"
+import GLOBAL from "../../GLOBAL";
 
 import TakeoutAssignJobModel from "../../models/TakeoutAssignJobModel";
 const takeoutassignjob_Model = new TakeoutAssignJobModel();
@@ -147,7 +148,12 @@ class TakeoutTool extends Component {
       if (res.require) {
 
         Swal.fire({ title: "บันทึกข้อมูลสำเร็จ !", icon: "success", })
-        this.props.history.push("/takeoutTool")
+        this.setState({
+          current_display: '',
+          tool_qty: '',
+          compartments: [],
+          keyword: '',
+        })
       } else {
         this.setState({
           loading: false,
@@ -163,7 +169,7 @@ class TakeoutTool extends Component {
   async _fetchData() {
     const jobs = await takeoutassignjob_Model.getJobBy()
     this.setState({
-      jobs,
+      jobs: jobs.data
     })
   }
   _onSelectJob = async (job_code) => {
@@ -171,7 +177,7 @@ class TakeoutTool extends Component {
     this.setState({
       loading: false,
       current_display: "job-op",
-      job_ops,
+      job_ops: job_ops.data
     });
   };
   _onSelectOp = async (job_op_code) => {
@@ -179,7 +185,7 @@ class TakeoutTool extends Component {
     this.setState({
       loading: false,
       current_display: "job-op-machine",
-      job_op_machine,
+      job_op_machine: job_op_machine.data,
     })
   };
 
@@ -188,7 +194,7 @@ class TakeoutTool extends Component {
     this.setState({
       loading: false,
       current_display: "job-op-machine-tool",
-      job_op_tool,
+      job_op_tool: job_op_tool.data,
     });
   };
 
@@ -198,7 +204,7 @@ class TakeoutTool extends Component {
     this.setState({
       loading: false,
       current_display: "job-op-machine-tool-use",
-      job_op_tool_use,
+      job_op_tool_use: job_op_tool_use.data,
     });
   };
   _onSelectOpToolUse = async (product_code) => {
@@ -420,7 +426,7 @@ class TakeoutTool extends Component {
         <p>
           <CardBody>
             <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
-              {this.state.jobs.data.map((item, idx) => (
+              {this.state.jobs.map((item, idx) => (
                 <Row>
                   <Col md={10}>
                     <Card
@@ -461,7 +467,7 @@ class TakeoutTool extends Component {
         <div className="container">
           <CardBody>
             <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
-              {this.state.job_ops.data.map((item, idx) => (
+              {this.state.job_ops.map((item, idx) => (
                 <Row>
                   <Col md={10}>
                     <Card
@@ -512,7 +518,7 @@ class TakeoutTool extends Component {
         <div className="container" >
           <CardBody>
             <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
-              {this.state.job_op_machine.data.map((item, idx) => (
+              {this.state.job_op_machine.map((item, idx) => (
                 <Row>
                   <Col md={10}>
                     <Card
@@ -563,7 +569,7 @@ class TakeoutTool extends Component {
         <div className="container">
           <CardBody>
             <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
-              {this.state.job_op_tool.data.map((item, idx) => (
+              {this.state.job_op_tool.map((item, idx) => (
                 <Row>
                   <Col md={10}>
                     <Card
@@ -614,7 +620,7 @@ class TakeoutTool extends Component {
         <div className="container">
           <CardBody>
             <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
-              {this.state.job_op_tool_use.data.map((item, idx) => (
+              {this.state.job_op_tool_use.map((item, idx) => (
                 <Row>
                   <Col md={10}>
                     <Card
@@ -622,7 +628,10 @@ class TakeoutTool extends Component {
                       key={idx}
                       style={{ width: '11rem', margin: "7px" }}
                       onClick={() => this._onSelectOpToolUse(item.product_code)}>
-                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                      <CardImg
+                        variant="top"
+                        style={{ width: '150px', height: '150px' }}
+                        src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
                       <CardBody>
                         <p style={{ height: '50px' }}>
                           <CardTitle>{item.job_op_tools_use_code}</CardTitle>
@@ -661,7 +670,6 @@ class TakeoutTool extends Component {
         </div>
       );
     } else if (current_display === "job-op-machine-tool-use-stock") { //หน้าเลือกช่อง(stock)
-
       return (
         <div className="container">
 
@@ -682,7 +690,10 @@ class TakeoutTool extends Component {
                         item.product_name,
                         item.product_code,
                       )}>
-                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                      <CardImg
+                        variant="top"
+                        style={{ width: '150px', height: '150px' }}
+                        src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
                       <CardBody>
                         <p style={{ height: '70px' }}>
                           <CardTitle>{item.stock_layout_code}</CardTitle>
@@ -910,6 +921,7 @@ class TakeoutTool extends Component {
         </div>
       );
     } else if (current_display === "no-assign-job") { //หน้าไม่ระบุงานหน้าค้นหา
+      //todo:
       return (
         <div className="container" >
           <Row className="app-footer">
@@ -954,7 +966,10 @@ class TakeoutTool extends Component {
                           onClick={() => this._onSelectOpToolUse(
                             item.product_code,
                           )}>
-                          <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                          <CardImg
+                            variant="top"
+                            style={{ width: '150px', height: '150px' }}
+                            src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
                           <CardBody>
                             <p style={{ height: '50px' }}>
                               <CardTitle>{item.product_code}</CardTitle>
@@ -1012,7 +1027,10 @@ class TakeoutTool extends Component {
                         item.product_name,
                         item.product_code,
                       )}>
-                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                      <CardImg
+                        variant="top"
+                        style={{ width: '150px', height: '150px' }}
+                        src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
                       <CardBody>
                         <p style={{ height: '70px' }}>
                           <CardTitle>{item.stock_layout_code}</CardTitle>
