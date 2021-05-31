@@ -12,7 +12,7 @@ export default class JobOpModel extends BaseModel {
 
     async getJobOpBy(data) {
         return this.authFetch({
-            url: 'JobOp/getJobOpBy',
+            url: 'job-op/getJobOpBy',
             method: 'POST',
             body: JSON.stringify(data),
         })
@@ -20,7 +20,7 @@ export default class JobOpModel extends BaseModel {
 
     async getJobOpByCode(data) {
         return this.authFetch({
-            url: 'takeouttool/getJobOpByCode',
+            url: 'job-op/getJobOpByCode',
             method: 'POST',
             body: JSON.stringify(data),
         })

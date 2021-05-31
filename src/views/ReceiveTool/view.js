@@ -5,11 +5,9 @@ import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 import { Link } from 'react-router-dom'
 import { Loading2 } from "../../component/revel-strap/";
-
+import Swal from "sweetalert2"
 import ReceiveToolModel from "../../models/ReceiveToolModel";
 const receiveTool_Model = new ReceiveToolModel();
-
-
 
 const endpoint = "http://localhost:7001";
 var sum_command = [];
@@ -28,12 +26,17 @@ class ReceiveTool extends Component {
       compartment_number: "",
       statusMachice: "",
       status_DoorClose_Finish: false,
-      sumToolQty: '',
       layoutName: "default",
       languageKeyboard: "english",
       input: "",
       current_display: "",
-      teststate: '',
+      stock: '',
+      stock_null: '',
+      products: [],
+      product_code: '',
+      product_name: '',
+      compartmentNull: '',
+      stock_layout_code: '',
     };
   }
   componentDidMount = () => {
@@ -42,7 +45,7 @@ class ReceiveTool extends Component {
   _searchCompartment = async () => {
     const { keyword } = this.state;
     const query_res = await receiveTool_Model.getProductByProductCodeAndName({ keyword })
-
+    console.log("query_res", query_res);
     this.setState(
       {
         compartments: query_res.data,
@@ -50,48 +53,95 @@ class ReceiveTool extends Component {
       });
   };
 
-  _onSelectOpToolUse = async (product_code) => {
+  _onSelectOpToolUse = async (product_code, product_name) => {
     const stock = await receiveTool_Model.getStocklayoutByProductCode({ product_code })
+    const stockslayoutnull = await receiveTool_Model.getStockNull()
 
     if (this.state.current_display === "") {
       this.setState({
         loading: false,
         current_display: "firstAddtool",
         stock: stock.data,
+        stock_null: stockslayoutnull.data,
+        product_name: product_name,
+        product_code: product_code,
       });
     }
+    console.log("product_code", this.state.product_code);
+
   };
 
-  _onSelectStock = async (stock_x, stock_y, product_unit) => {
+  _onSelectStock = async (stock_x, stock_y, stock_layout_qty, stock_layout_code, product_name, product_code) => {
     sum_command = [];
     sum_command.push(stock_y, ",", stock_x);
     if (this.state.current_display === "firstAddtool") {
       this.setState({
         loading: false,
         current_display: "finishAddtool",
-        tool_qty: product_unit,
+        tool_qty: stock_layout_qty,
+        stock_layout_code: stock_layout_code,
+        product_name: product_name,
+        product_code: product_code,
       });
     }
 
+  };
+
+  _onSelectStockNull = async (width, length, height) => {
+
+    const product = await receiveTool_Model.getProductBy()
+    const compartmentNull = await receiveTool_Model.getcompartmentNullByWLH({
+      width: width,
+      length: length,
+      height: height,
+    })
+
+    this.setState({
+      current_display: 'finishAddtool-stocklayoutnull',
+      products: product.data,
+      compartmentNull: compartmentNull.data,
+      compartment_number: compartmentNull.data[0].stock_x,
+      class_number: compartmentNull.data[0].stock_y,
+      stock_layout_code: compartmentNull.data[0].stock_layout_code
+    })
+
+    sum_command = [];
+    sum_command.push(this.state.class_number, ",", this.state.compartment_number);
 
   };
 
-  async _updateData() {
+  _updateData() {
+
     const tool_qty = this.state.tool_qty;
-    const product_code = this.state.stock[0].product_code;
-    await receiveTool_Model.updateProductUnitByProductCode({ product_code, tool_qty })
-    alert("Success")
+    const product_code = this.state.product_code;
+    const stock_layout_code = this.state.stock_layout_code;
+    const stock_use = 1
+
     this.setState({
-      current_display: '',
-      keyword: '',
-      status_DoorClose_Finish: false,
-      compartments: [],
+      loading: true,
+    }, async () => {
+      const res = await receiveTool_Model.updateProductUnitByProductCode({
+        product_code,
+        tool_qty,
+        stock_use,
+        stock_layout_code,
+      })
+
+      if (res.require) {
+
+        Swal.fire({ title: "บันทึกข้อมูลสำเร็จ !", icon: "success", })
+        this.props.history.push("/receiveTool")
+      } else {
+        this.setState({
+          loading: false,
+        }, () => {
+          Swal.fire({ title: "เกิดข้อผิดพลาดในการบันทึก !", icon: "error", })
+        })
+      }
     })
   }
 
   _sendMessage = ({ event_button, iswait_micro }) => {
-
-    console.log("send.....", this.state.tool_qty_Add);
 
     if (this.state.tool_qty_Add !== "") {
       this.setState(
@@ -118,12 +168,23 @@ class ReceiveTool extends Component {
             statusMachice: "RUNNING",
           });
         } else if (messages[1] === "FINISH\r") {
-          this.setState({
-            iswait_micro: false,
-            statusMachice: "FINISH",
-            current_display: "finishAddtool2",
-            keyword: '',
-          });
+
+          if (this.state.current_display === "finishAddtool") {
+            this.setState({
+              iswait_micro: false,
+              statusMachice: "FINISH",
+              current_display: "finishAddtool2",
+              keyword: '',
+            });
+          }
+          else if (this.state.current_display === "finishAddtool-stocklayoutnull") {
+            this.setState({
+              iswait_micro: false,
+              statusMachice: "FINISH",
+              current_display: "finishAddtool2-stocklayoutnull",
+              keyword: '',
+            });
+          }
         }
         if (messages[1] === "DOORCLOSE\r") {
           this.setState({
@@ -209,7 +270,7 @@ class ReceiveTool extends Component {
   _onKeyPress = button => {
     let keyword = this.state.keyword
     if (button === "{shift}" || button === "{lock}") this._handleShift();
-    if (this.state.current_display === "finishAddtool") {
+    if (this.state.current_display === "finishAddtool" || this.state.current_display === "finishAddtool-stocklayoutnull") {
       if (button !== "backspace" && button !== "") {
         keyword += button
       } else if (button === "backspace") {
@@ -220,7 +281,8 @@ class ReceiveTool extends Component {
         tool_qty_Add: keyword
       })
     }
-    else if (this.state.current_display === "finishAddtool2") {
+
+    else if (this.state.current_display === "finishAddtool2" || this.state.current_display === "finishAddtool2-stocklayoutnull") {
       if (button !== "backspace" && button !== "") {
         keyword += button
       } else if (button === "backspace") {
@@ -265,6 +327,8 @@ class ReceiveTool extends Component {
 
   };
 
+
+
   _showDisplay() {
     const { current_display } = this.state;
     if (current_display === "") {
@@ -301,27 +365,34 @@ class ReceiveTool extends Component {
           </Row>
           <hr></hr>
           <div>
-            {
-              <div className="app-grid7">
+
+            <CardBody>
+              <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
                 {this.state.compartments.map((item, idx) => (
-                  <Col md={2}>
-                    <Card
-                      className="btn"
-                      key={idx}
-                      style={{ width: '18rem' }}
-                      onClick={() => this._onSelectOpToolUse(
-                        item.product_code,
-                      )}>
-                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
-                      <CardBody>
-                        <CardTitle>{item.product_code}</CardTitle>
-                        <CardTitle>{item.product_name}</CardTitle>
-                      </CardBody>
-                    </Card>
-                  </Col>
+                  <Row>
+                    <Col md={10}>
+                      <Card
+                        className="btn"
+                        key={idx}
+                        style={{ width: '11rem', margin: "7px" }}
+                        onClick={() => this._onSelectOpToolUse(
+                          item.product_code,
+                          item.product_name
+                        )}>
+                        <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                        <CardBody>
+                          <p style={{ height: '50px' }}>
+                            <CardTitle>{item.product_code}</CardTitle>
+                            <CardTitle>{item.product_name}</CardTitle>
+                          </p>
+                        </CardBody>
+                      </Card>
+                    </Col>
+                  </Row>
                 ))}
               </div>
-            }
+            </CardBody>
+
           </div>
           <Row className="app-footer">
             <Col md={5} />
@@ -351,28 +422,65 @@ class ReceiveTool extends Component {
       return (
         <div className="container">
           {" "}
-          <div className="app-grid7">
-            {this.state.stock.map((item, idx) => (
-              <Col md={2}>
-                <Card
-                  className="btn"
-                  key={idx}
-                  style={{ width: '18rem' }}
-                  onClick={() => this._onSelectStock(
-                    item.stock_x,
-                    item.stock_y,
-                    item.product_unit,
-                  )}>
-                  <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
-                  <CardBody>
-                    <CardTitle>{item.stock_layout_code}</CardTitle>
-                    <CardTitle>{item.product_name}</CardTitle>
-                    <CardTitle>คงเหลือ {item.product_unit} ชิ้น</CardTitle>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </div>
+
+          <Row>
+            <CardBody>
+              <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
+                {this.state.stock.map((item, idx) => (
+                  <Row>
+                    <Col md={10}>
+                      <Card
+                        className="btn"
+                        key={idx}
+                        style={{ width: '11rem', margin: "7px" }}
+                        onClick={() => this._onSelectStock(
+                          item.stock_x,
+                          item.stock_y,
+                          item.stock_layout_qty,
+                          item.stock_layout_code,
+                          item.product_name,
+                          item.product_code,
+                        )}>
+                        <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                        <CardBody>
+                          <p style={{ height: '70px' }}>
+                            <CardTitle>{item.stock_layout_code}</CardTitle>
+                            <CardTitle>{item.product_name}</CardTitle>
+                            <CardTitle>คงเหลือ {item.stock_layout_qty} ชิ้น</CardTitle>
+                          </p>
+                        </CardBody>
+                      </Card>
+                    </Col>
+                  </Row>
+                ))}
+              </div>
+            </CardBody>
+
+          </Row>
+          <hr
+          />
+          <Row>
+            <div className="app-grid7">
+              {this.state.stock_null.map((item, idx) => (
+                <Col md={2}>
+                  <Card
+                    className="btn"
+                    key={idx}
+                    style={{ width: '18rem' }}
+                    onClick={() => this._onSelectStockNull(
+                      item.width,
+                      item.length,
+                      item.height,
+                    )}>
+                    <CardBody>
+                      <CardTitle>กว้าง{item.width} (Cm) * ยาว{item.length} (Cm) * สูง{item.height} (Cm)</CardTitle>
+                    </CardBody>
+                  </Card>
+                </Col>
+              ))}
+            </div>
+
+          </Row>
           <Row className="app-footer">
             <Col md={5}></Col>
             <Col md={2}>
@@ -382,6 +490,7 @@ class ReceiveTool extends Component {
                   onClick={() =>
                     this.setState({
                       current_display: "",
+                      compartments: [],
                     })}>
                   ย้อนกลับ
                   </button>
@@ -405,7 +514,7 @@ class ReceiveTool extends Component {
                   <p style={{ textAlign: "right" }}>ชื่ออุปกรณ์</p>
                 </Col>
                 <Col md={4}>
-                  <p style={{ textAlign: "center" }}> {this.state.stock[0].product_name}</p>
+                  <p style={{ textAlign: "center" }}> {this.state.product_name}</p>
                 </Col>
                 <Col md={4}>
                 </Col>
@@ -416,7 +525,7 @@ class ReceiveTool extends Component {
                   <p style={{ textAlign: "right" }}>ชื่อช่อง</p>
                 </Col>
                 <Col md={4}>
-                  <p style={{ textAlign: "center" }}> {this.state.stock[0].stock_layout_code}</p>
+                  <p style={{ textAlign: "center" }}> {this.state.stock_layout_code}</p>
                 </Col>
                 <Col md={4}>
                 </Col>
@@ -504,6 +613,128 @@ class ReceiveTool extends Component {
         </div>
       );
     }
+    else if (current_display === "finishAddtool-stocklayoutnull") {
+
+
+      return (
+        <div className="container">
+          {this.state.iswait_micro ?
+            (
+              <Loading2 show={this.state.iswait_micro} />
+            ) : (<div className="container">
+              <Row>
+                <Col md={4}>
+                  <p style={{ textAlign: "right" }}>ชื่ออุปกรณ์</p>
+                </Col>
+                <Col md={4}>
+                  <input
+                    style={{ textAlign: "center" }}
+                    type="text"
+                    className="form-control"
+                    width="500px"
+                    aria-label="Username"
+                    aria-describedby="basic-addon1"
+                    disabled
+                    value={this.state.product_name}
+                  />
+                </Col>
+                <Col md={4}>
+                </Col>
+              </Row>
+
+              <Row className="app-footer">
+                <Col md={4}>
+                  <p style={{ textAlign: "right" }}>ชื่อช่อง</p>
+                </Col>
+                <Col md={4}>
+                  <input
+                    style={{ textAlign: "center" }}
+                    type="text"
+                    className="form-control"
+                    width="500px"
+                    aria-label="Username"
+                    aria-describedby="basic-addon1"
+                    disabled
+                    value={this.state.stock_layout_code}
+                  />
+                </Col>
+                <Col md={4}>
+                </Col>
+              </Row>
+
+              <Row className="app-footer">
+                <Col md={4}>
+                  <p style={{ textAlign: "right" }}>จำนวนเพิ่ม</p>
+                </Col>
+                <Col md={4}>
+                  <input
+                    style={{ textAlign: "center" }}
+                    type="number"
+                    className="form-control"
+                    width="500px"
+                    placeholder="จำนวนเพิ่ม"
+                    aria-label="Username"
+                    aria-describedby="basic-addon1"
+                    value={this.state.keyword}
+                  // onChange={(e) => this.setState({ tool_qty_Takeout: e.target.value })}
+                  >
+                  </input>
+                </Col>
+                <Col md={4}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() =>
+                      this._sendMessage({
+                        event_button: sum_command,
+                        iswait_micro: true,
+                      })}>
+                    เพิ่ม
+                </button>
+                </Col>
+              </Row>
+              <Row className="app-footer">
+                <Col md={4}></Col>
+                <Col md={4}>
+                  <Row>
+                    <Col md={12}>
+                      <button
+                        className="btn-secondary"
+                        style={{ width: '100%' }}
+                        onClick={() =>
+                          this.setState({
+                            current_display: "firstAddtool",
+                            product_code: '',
+                          })}>
+                        ย้อนกลับ
+                      </button>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+
+              <Row className="app-footer">
+                <Col md={4}></Col>
+                <Col md={4}>
+                  <Keyboard
+                    layout={{
+                      'default': [
+                        '1 2 3',
+                        '4 5 6',
+                        '7 8 9',
+                        ' 0 backspace'
+                      ],
+                    }}
+                    onChange={this._onChange}
+                    onKeyPress={this._onKeyPress}
+                  />
+                </Col>
+                <Col md={4}></Col>
+              </Row>
+            </div>)}
+        </div>
+      );
+    }
+
     else if (current_display === "finishAddtool2") {
       return (
         <div className="container">
@@ -589,9 +820,96 @@ class ReceiveTool extends Component {
         </div>
       );
     }
+    else if (current_display === "finishAddtool2-stocklayoutnull") {
+      return (
+
+        <div className="container">
+          <Row className="app-footer">
+            <Col md={4}>
+              <p style={{ textAlign: "right" }}>จำนวนในช่อง</p>
+            </Col>
+            <Col md={4}>
+              <input
+                style={{ textAlign: "center" }}
+                type="number"
+                className="form-control"
+                width="500px"
+                placeholder="จำนวนในช่อง"
+                aria-label="Username"
+                aria-describedby="basic-addon1"
+                value={this.state.keyword}
+              />
+            </Col>
+          </Row>
+          <Row className="app-footer">
+            <Col md={4}>
+              <p style={{ textAlign: "right" }}>คงเหลือ</p>
+            </Col>
+            <Col md={4}>
+              <input
+                style={{ textAlign: "center" }}
+                type="number"
+                className="form-control"
+                width="500px"
+                aria-label="Username"
+                aria-describedby="basic-addon1"
+                disabled
+                value={this.state.tool_qty}
+              />
+            </Col>
+          </Row>
+          <Row className="app-footer">
+            <Col md={4}></Col>
+            <Col md={4}>
+              <Row>
+                <Col md={12}>
+                  {this.state.status_DoorClose_Finish ? (
+                    <button
+
+                      className="btn btn-success"
+                      style={{ width: '100%' }}
+                      onClick={
+                        () => this._updateData()
+                      }
+                    >
+                      ตกลง
+                    </button>
+                  ) : (
+                    <button
+                      disabled
+                      style={{ width: '100%' }}
+                      className="btn btn-success">
+                      ตกลง
+                    </button>
+                  )}
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+          <Row className="app-footer">
+            <Col md={4}></Col>
+            <Col md={4}>
+              <Keyboard
+                layout={{
+                  'default': [
+                    '1 2 3',
+                    '4 5 6',
+                    '7 8 9',
+                    ' 0 backspace'
+                  ],
+                }}
+                onKeyPress={this._onKeyPress}
+              />
+            </Col>
+            <Col md={4}></Col>
+          </Row>
+        </div>
+      );
+    }
   }
 
   render() {
+
     return (
       <div className="container">
         {this._showDisplay()}

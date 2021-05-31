@@ -5,6 +5,7 @@ import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 import { Loading2 } from "../../component/revel-strap";
 import { Link } from 'react-router-dom'
+import Swal from "sweetalert2"
 
 import TakeoutAssignJobModel from "../../models/TakeoutAssignJobModel";
 const takeoutassignjob_Model = new TakeoutAssignJobModel();
@@ -32,14 +33,17 @@ class TakeoutTool extends Component {
       loading: true,
       ops: [],
       show_finish: false,
+      status_DoorClose_Finish: false,
       stock: [],
+      stock_layout_code: '',
       sumToolQty: 0,
       tool_qty: "",
       tool_qty_In: "",
       tool_qty_Takeout: "",
       type_job: "",
       languageKeyboard: "english",
-      status_DoorClose_Finish: false,
+      product_name: '',
+      product_code: '',
     };
   }
 
@@ -124,17 +128,36 @@ class TakeoutTool extends Component {
     });
 
   }
-  async _updateData() {
+  _updateData() {
     const tool_qty = this.state.tool_qty;
-    const product_code = this.state.stock[0].product_code;
-    await takeoutassignjob_Model.updateProductUnitByProductCode({ product_code, tool_qty })
-    alert("Success")
+    const product_code = this.state.product_code;
+    const stock_layout_code = this.state.stock_layout_code;
+    const stock_use = 1
+
     this.setState({
-      current_display: '',
-      keyword: '',
-      status_DoorClose_Finish: false,
-      compartments: [],
+      loading: true,
+    }, async () => {
+      const res = await takeoutassignjob_Model.updateProductUnitByProductCode({
+        product_code,
+        tool_qty,
+        stock_use,
+        stock_layout_code,
+      })
+
+      if (res.require) {
+
+        Swal.fire({ title: "บันทึกข้อมูลสำเร็จ !", icon: "success", })
+        this.props.history.push("/takeoutTool")
+      } else {
+        this.setState({
+          loading: false,
+        }, () => {
+          Swal.fire({ title: "เกิดข้อผิดพลาดในการบันทึก !", icon: "error", })
+        })
+      }
+
     })
+
   }
 
   async _fetchData() {
@@ -197,7 +220,7 @@ class TakeoutTool extends Component {
     }
   };
 
-  _onSelectStock = async (stock_x, stock_y, product_unit) => {
+  _onSelectStock = async (stock_x, stock_y, stock_layout_qty, stock_layout_code, product_name, product_code) => {
     sum_command = [];
     sum_command.push(stock_y, ",", stock_x);
 
@@ -205,7 +228,10 @@ class TakeoutTool extends Component {
       this.setState({
         loading: false,
         current_display: "assign-firsttakeouttool",
-        tool_qty: product_unit,
+        tool_qty: stock_layout_qty,
+        stock_layout_code: stock_layout_code,
+        product_name: product_name,
+        product_code: product_code,
       });
     }
 
@@ -213,7 +239,10 @@ class TakeoutTool extends Component {
       this.setState({
         loading: false,
         current_display: "no-assign-firsttakeouttool",
-        tool_qty: product_unit,
+        tool_qty: stock_layout_qty,
+        stock_layout_code: stock_layout_code,
+        product_name: product_name,
+        product_code: product_code,
       });
     }
 
@@ -229,11 +258,7 @@ class TakeoutTool extends Component {
       });
   };
   _onChange = input => {
-    // if (this.state.current_display === "no-assign-job") {
-    //   this.setState({
-    //     keyword: input,
-    //   });
-    // }
+
   };
   _onKeyPress = button => {
     let keyword = this.state.keyword
@@ -392,24 +417,30 @@ class TakeoutTool extends Component {
       );
     } else if (current_display === "assign-job") { //หน้าเลือกงาน
       return (
-        <div className="container">
-          <div className="app-grid7">
-            {this.state.jobs.data.map((item, idx) => (
-              <Col md={2}>
-                <Card
-                  className="btn"
-                  key={idx}
-                  style={{ width: '18rem' }}
-                  onClick={() => this._onSelectJob(item.job_code)}>
-                  <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
-                  <CardBody>
-                    <CardTitle>{item.job_code}</CardTitle>
-                    <CardTitle>{item.job_name}</CardTitle>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </div>
+        <p>
+          <CardBody>
+            <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
+              {this.state.jobs.data.map((item, idx) => (
+                <Row>
+                  <Col md={10}>
+                    <Card
+                      className="btn"
+                      key={idx}
+                      style={{ width: '11rem', margin: "7px" }}
+                      onClick={() => this._onSelectJob(item.job_code)}>
+                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                      <CardBody>
+                        <p style={{ height: '50px' }}>
+                          <CardTitle>{item.job_code}</CardTitle>
+                          <CardTitle>{item.job_name}</CardTitle>
+                        </p>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
+              ))}
+            </div>
+          </CardBody>
           <Row className="app-footer">
             <Col md={10}></Col>
             <Col md={2}>
@@ -423,27 +454,34 @@ class TakeoutTool extends Component {
                   </button>
             </Col>
           </Row>
-        </div>
+        </p>
       );
     } else if (current_display === "job-op") { //หน้าเลือกOP
       return (
         <div className="container">
-          <Row>
-            {this.state.job_ops.data.map((item, idx) => (
-              <Col md={2}>
-                <Card
-                  className="btn"
-                  key={idx}
-                  onClick={() => this._onSelectOp(item.job_op_code)}>
-                  <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
-                  <CardBody>
-                    <CardTitle>{item.job_op_code}</CardTitle>
-                    <CardTitle>{item.job_op_name}</CardTitle>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </Row>
+          <CardBody>
+            <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
+              {this.state.job_ops.data.map((item, idx) => (
+                <Row>
+                  <Col md={10}>
+                    <Card
+                      className="btn"
+                      key={idx}
+                      style={{ width: '11rem', margin: "7px" }}
+                      onClick={() => this._onSelectOp(item.job_op_code)}>
+                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                      <CardBody>
+                        <p style={{ height: '50px' }}>
+                          <CardTitle>{item.job_op_code}</CardTitle>
+                          <CardTitle>{item.job_op_name}</CardTitle>
+                        </p>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
+              ))}
+            </div>
+          </CardBody>
 
           <Row className="app-footer">
             <Col md={9}></Col>
@@ -472,23 +510,29 @@ class TakeoutTool extends Component {
     } else if (current_display === "job-op-machine") { //หน้าเลือกMachine
       return (
         <div className="container" >
-          <div className="app-grid7">
-            {this.state.job_op_machine.data.map((item, idx) => (
-              <Col md={2}>
-                <Card
-                  className="btn"
-                  key={idx}
-                  style={{ width: '18rem' }}
-                  onClick={() => this._onSelectMachine(item.job_op_code)}>
-                  <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
-                  <CardBody>
-                    <CardTitle>{item.machine_code}</CardTitle>
-                    <CardTitle>{item.machine_name}</CardTitle>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </div>
+          <CardBody>
+            <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
+              {this.state.job_op_machine.data.map((item, idx) => (
+                <Row>
+                  <Col md={10}>
+                    <Card
+                      className="btn"
+                      key={idx}
+                      style={{ width: '11rem', margin: "7px" }}
+                      onClick={() => this._onSelectMachine(item.job_op_code)}>
+                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                      <CardBody>
+                        <p style={{ height: '50px' }}>
+                          <CardTitle>{item.machine_code}</CardTitle>
+                          <CardTitle>{item.machine_name}</CardTitle>
+                        </p>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
+              ))}
+            </div>
+          </CardBody>
 
           <Row className="app-footer">
             <Col md={9}></Col>
@@ -517,23 +561,30 @@ class TakeoutTool extends Component {
     } else if (current_display === "job-op-machine-tool") { //หน้าเลือกprocress
       return (
         <div className="container">
-          <div className="app-grid7">
-            {this.state.job_op_tool.data.map((item, idx) => (
-              <Col md={2}>
-                <Card
-                  className="btn"
-                  key={idx}
-                  style={{ width: '18rem' }}
-                  onClick={() => this._onSelectOpTool(item.job_op_tools_code)}>
-                  <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
-                  <CardBody>
-                    <CardTitle>{item.job_op_tools_code}</CardTitle>
-                    <CardTitle>{item.job_op_tools_name}</CardTitle>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </div>
+          <CardBody>
+            <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
+              {this.state.job_op_tool.data.map((item, idx) => (
+                <Row>
+                  <Col md={10}>
+                    <Card
+                      className="btn"
+                      key={idx}
+                      style={{ width: '11rem', margin: "7px" }}
+                      onClick={() => this._onSelectOpTool(item.job_op_tools_code)}>
+                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                      <CardBody>
+                        <p style={{ height: '70px' }}>
+                          <CardTitle>{item.job_op_tools_code}</CardTitle>
+                          <CardTitle>{item.job_op_tools_name}</CardTitle>
+                        </p>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
+              ))}
+            </div>
+          </CardBody>
+
           <Row className="app-footer">
             <Col md={9}></Col>
             <Col md={3}>
@@ -561,23 +612,29 @@ class TakeoutTool extends Component {
     } else if (current_display === "job-op-machine-tool-use") { //หน้าเลือกเครื่องมือที่ใช้
       return (
         <div className="container">
-          <div className="app-grid7">
-            {this.state.job_op_tool_use.data.map((item, idx) => (
-              <Col md={2}>
-                <Card
-                  className="btn"
-                  key={idx}
-                  style={{ width: '18rem' }}
-                  onClick={() => this._onSelectOpToolUse(item.product_code)}>
-                  <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
-                  <CardBody>
-                    <CardTitle>{item.job_op_tools_use_code}</CardTitle>
-                    <CardTitle>{item.product_name}</CardTitle>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </div>
+          <CardBody>
+            <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
+              {this.state.job_op_tool_use.data.map((item, idx) => (
+                <Row>
+                  <Col md={10}>
+                    <Card
+                      className="btn"
+                      key={idx}
+                      style={{ width: '11rem', margin: "7px" }}
+                      onClick={() => this._onSelectOpToolUse(item.product_code)}>
+                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                      <CardBody>
+                        <p style={{ height: '50px' }}>
+                          <CardTitle>{item.job_op_tools_use_code}</CardTitle>
+                          <CardTitle>{item.product_name}</CardTitle>
+                        </p>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
+              ))}
+            </div>
+          </CardBody>
 
           <Row className="app-footer">
             <Col md={9}></Col>
@@ -604,31 +661,41 @@ class TakeoutTool extends Component {
         </div>
       );
     } else if (current_display === "job-op-machine-tool-use-stock") { //หน้าเลือกช่อง(stock)
+
       return (
         <div className="container">
-          {" "}
-          <div className="app-grid7">
-            {this.state.stock.map((item, idx) => (
-              <Col md={2}>
-                <Card
-                  className="btn"
-                  key={idx}
-                  style={{ width: '18rem' }}
-                  onClick={() => this._onSelectStock(
-                    item.stock_x,
-                    item.stock_y,
-                    item.product_unit,
-                  )}>
-                  <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
-                  <CardBody>
-                    <CardTitle>{item.stock_layout_code}</CardTitle>
-                    <CardTitle>{item.product_name}</CardTitle>
-                    <CardTitle>คงเหลือ {item.product_unit}</CardTitle>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </div>
+
+          <CardBody>
+            <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
+              {this.state.stock.map((item, idx) => (
+                <Row>
+                  <Col md={10}>
+                    <Card
+                      className="btn"
+                      key={idx}
+                      style={{ width: '11rem', margin: "7px" }}
+                      onClick={() => this._onSelectStock(
+                        item.stock_x,
+                        item.stock_y,
+                        item.stock_layout_qty,
+                        item.stock_layout_code,
+                        item.product_name,
+                        item.product_code,
+                      )}>
+                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                      <CardBody>
+                        <p style={{ height: '70px' }}>
+                          <CardTitle>{item.stock_layout_code}</CardTitle>
+                          <CardTitle>{item.product_name}</CardTitle>
+                          <CardTitle>คงเหลือ {item.stock_layout_qty}</CardTitle>
+                        </p>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
+              ))}
+            </div>
+          </CardBody>
 
           <Row className="app-footer">
             <Col md={9}></Col>
@@ -665,7 +732,7 @@ class TakeoutTool extends Component {
                   <p style={{ textAlign: "right" }}>ชื่ออุปกรณ์</p>
                 </Col>
                 <Col md={4}>
-                  <p style={{ textAlign: "center" }}> {this.state.stock[0].product_name}</p>
+                  <p style={{ textAlign: "center" }}> {this.state.product_name}</p>
                 </Col>
                 <Col md={4}>
                 </Col>
@@ -675,7 +742,7 @@ class TakeoutTool extends Component {
                   <p style={{ textAlign: "right" }}>ชื่อช่อง</p>
                 </Col>
                 <Col md={4}>
-                  <p style={{ textAlign: "center" }}> {this.state.stock[0].stock_layout_code}</p>
+                  <p style={{ textAlign: "center" }}> {this.state.stock_layout_code}</p>
                 </Col>
                 <Col md={4}>
                 </Col>
@@ -875,25 +942,31 @@ class TakeoutTool extends Component {
           <hr></hr>
           <div>
             {
-              <div className="app-grid7">
-                {this.state.compartments.map((item, idx) => (
-                  <Col md={2}>
-                    <Card
-                      className="btn"
-                      key={idx}
-                      style={{ width: '18rem' }}
-                      onClick={() => this._onSelectOpToolUse(
-                        item.product_code,
-                      )}>
-                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
-                      <CardBody>
-                        <CardTitle>{item.product_code}</CardTitle>
-                        <CardTitle>{item.product_name}</CardTitle>
-                      </CardBody>
-                    </Card>
-                  </Col>
-                ))}
-              </div>
+              <CardBody>
+                <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
+                  {this.state.compartments.map((item, idx) => (
+                    <Row>
+                      <Col md={10}>
+                        <Card
+                          className="btn"
+                          key={idx}
+                          style={{ width: '11rem', margin: "7px" }}
+                          onClick={() => this._onSelectOpToolUse(
+                            item.product_code,
+                          )}>
+                          <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                          <CardBody>
+                            <p style={{ height: '50px' }}>
+                              <CardTitle>{item.product_code}</CardTitle>
+                              <CardTitle>{item.product_name}</CardTitle>
+                            </p>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                    </Row>
+                  ))}
+                </div>
+              </CardBody>
             }
           </div>
           <Row className="app-footer">
@@ -922,29 +995,37 @@ class TakeoutTool extends Component {
 
       return (
         <div className="container">
-          {" "}
-          <div className="app-grid7">
-            {this.state.stock.map((item, idx) => (
-              <Col md={2}>
-                <Card
-                  className="btn"
-                  key={idx}
-                  style={{ width: '18rem' }}
-                  onClick={() => this._onSelectStock(
-                    item.stock_x,
-                    item.stock_y,
-                    item.product_unit,
-                  )}>
-                  <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
-                  <CardBody>
-                    <CardTitle>{item.stock_layout_code}</CardTitle>
-                    <CardTitle>{item.product_name}</CardTitle>
-                    <CardTitle>คงเหลือ {item.product_unit} ชิ้น</CardTitle>
-                  </CardBody>
-                </Card>
-              </Col>
-            ))}
-          </div>
+          <CardBody>
+            <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
+              {this.state.stock.map((item, idx) => (
+                <Row>
+                  <Col md={10}>
+                    <Card
+                      className="btn"
+                      key={idx}
+                      style={{ width: '11rem', margin: "7px" }}
+                      onClick={() => this._onSelectStock(
+                        item.stock_x,
+                        item.stock_y,
+                        item.stock_layout_qty,
+                        item.stock_layout_code,
+                        item.product_name,
+                        item.product_code,
+                      )}>
+                      <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
+                      <CardBody>
+                        <p style={{ height: '70px' }}>
+                          <CardTitle>{item.stock_layout_code}</CardTitle>
+                          <CardTitle>{item.product_name}</CardTitle>
+                          <CardTitle>คงเหลือ {item.stock_layout_qty} ชิ้น</CardTitle>
+                        </p>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                </Row>
+              ))}
+            </div>
+          </CardBody>
           <Row className="app-footer">
             <Col md={10}></Col>
             <Col md={2}>
@@ -958,7 +1039,6 @@ class TakeoutTool extends Component {
                   </button>
             </Col>
           </Row>
-
         </div>
       );
     } else if (current_display === "no-assign-firsttakeouttool") {// หน้าเบิกแบบไม่ระบุงาน หน้าแรก
@@ -974,7 +1054,7 @@ class TakeoutTool extends Component {
                   <p style={{ textAlign: "right" }}>ชื่ออุปกรณ์</p>
                 </Col>
                 <Col md={4}>
-                  <p style={{ textAlign: "center" }}> {this.state.stock[0].product_name}</p>
+                  <p style={{ textAlign: "center" }}> {this.state.product_name}</p>
                 </Col>
                 <Col md={4}>
                 </Col>
@@ -985,7 +1065,7 @@ class TakeoutTool extends Component {
                   <p style={{ textAlign: "right" }}>ชื่อช่อง</p>
                 </Col>
                 <Col md={4}>
-                  <p style={{ textAlign: "center" }}> {this.state.stock[0].stock_layout_code}</p>
+                  <p style={{ textAlign: "center" }}> {this.state.stock_layout_code}</p>
                 </Col>
                 <Col md={4}>
                 </Col>
