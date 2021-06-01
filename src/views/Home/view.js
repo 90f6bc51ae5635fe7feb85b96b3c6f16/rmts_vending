@@ -18,10 +18,7 @@ class Home extends Component {
                 <Row>
                     <Col md={3}>
                         <NavLink exact to={`/receiveTool`} style={{ width: '100%' }}>
-                            <Card
-                                className="btn"
-                                // style={{ width: '18rem' }}
-                                >
+                            <Card className="btn">
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>รับเข้าอุปกรณ์</CardTitle>
@@ -31,10 +28,7 @@ class Home extends Component {
                     </Col>
                     <Col md={3}>
                         <NavLink exact to={`/takeoutTool`} style={{ width: '100%' }}>
-                            <Card
-                                className="btn"
-                                // style={{ width: '18rem' }}
-                                >
+                            <Card className="btn">
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>เบิกออกอุปกรณ์</CardTitle>
@@ -44,10 +38,7 @@ class Home extends Component {
                     </Col>
                     <Col md={3}>
                         <NavLink exact to={`/settingmachine`} style={{ width: '100%' }}>
-                            <Card
-                                className="btn"
-                                // style={{ width: '18rem' }}
-                                >
+                            <Card className="btn">
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>ตั้งค่าเครื่อง</CardTitle>
@@ -56,17 +47,14 @@ class Home extends Component {
                         </NavLink>
                     </Col>
                     <Col md={3}>
-                        {/* <NavLink exact to={`/settingmachine`} style={{ width: '100%' }}> */}
-                            <Card
-                                className="btn"
-                                // style={{ width: '18rem' }}
-                                >
+                        <NavLink exact to={`/settinganother`} style={{ width: '100%' }}>
+                            <Card className="btn">
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>ตั้งค่าอื่นๆ</CardTitle>
                                 </CardBody>
                             </Card>
-                        {/* </NavLink> */}
+                        </NavLink>
                     </Col>
                 </Row>
             </div>

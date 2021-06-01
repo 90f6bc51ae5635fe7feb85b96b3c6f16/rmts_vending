@@ -8,6 +8,7 @@ import { Loading2 } from "../../component/revel-strap/";
 import Swal from "sweetalert2"
 import GLOBAL from "../../GLOBAL";
 import ReceiveToolModel from "../../models/ReceiveToolModel";
+import imgdefault from "../../../src/assets/img/default.jpg"
 const receiveTool_Model = new ReceiveToolModel();
 
 const endpoint = "http://localhost:7001";
@@ -60,7 +61,6 @@ class ReceiveTool extends Component {
       });
     console.log("compartments", this.state.compartments);
   };
-
   _onSelectOpToolUse = async (product_code, product_name) => {
     const product_image = ''
     const stock = await receiveTool_Model.getStocklayoutByProductCode({ product_code })
@@ -84,7 +84,6 @@ class ReceiveTool extends Component {
 
 
   };
-
   _onSelectStock = async (stock_x, stock_y, stock_layout_qty, stock_layout_code, product_name, product_code) => {
     sum_command = [];
     sum_command.push(stock_y, ",", stock_x);
@@ -100,7 +99,6 @@ class ReceiveTool extends Component {
     }
 
   };
-
   _onSelectStockNull = async (width, length, height) => {
 
     const product = await receiveTool_Model.getProductBy()
@@ -123,7 +121,6 @@ class ReceiveTool extends Component {
     sum_command.push(this.state.class_number, ",", this.state.compartment_number);
 
   };
-
   _updateData() {
 
     const tool_qty = this.state.tool_qty;
@@ -160,7 +157,6 @@ class ReceiveTool extends Component {
       }
     })
   }
-
   _sendMessage = ({ event_button, iswait_micro }) => {
 
     if (this.state.tool_qty_Add !== "") {
@@ -176,7 +172,6 @@ class ReceiveTool extends Component {
       );
     }
   };
-
   _socketSetup() {
     const socket = socketIOClient(endpoint);
     socket.on("answer-micro", (messageNew) => {
@@ -214,7 +209,6 @@ class ReceiveTool extends Component {
       }
     });
   }
-
   _buttonTarget(class_number, compartment_number, tool_qty) {
     sum_command = [];
     sum_command.push(class_number, ",", compartment_number);
@@ -225,7 +219,6 @@ class ReceiveTool extends Component {
       tool_qty_Add: '',
     });
   }
-
   _sumToolqty() {
     let tool_qty_In = this.state.tool_qty_In;
     let tool_qty_Add = this.state.tool_qty_Add;
@@ -235,7 +228,6 @@ class ReceiveTool extends Component {
     });
 
   }
-
   _languageKeyboard() {
     const { languageKeyboard } = this.state;
     if (languageKeyboard === "english") {
@@ -277,18 +269,10 @@ class ReceiveTool extends Component {
     }
   }
   _onChange = input => {
-
-    // if (this.state.current_display === "") {
-    //   this.setState({
-    //     keyword: input,
-    //   });
-
-    // }
-
   };
-
   _onKeyPress = button => {
     let keyword = this.state.keyword
+
     if (button === "{shift}" || button === "{lock}") this._handleShift();
     if (this.state.current_display === "finishAddtool" || this.state.current_display === "finishAddtool-stocklayoutnull") {
       if (button !== "backspace" && button !== "") {
@@ -326,7 +310,7 @@ class ReceiveTool extends Component {
       })
     }
     if (this.state.current_display === "") {
-      if (button !== "{bksp}" && button !== "" && button !== "{enter}" && button !== "{shift}" && button !== "{lock}" && button !== "{tab}" && button !== "Th" && button !== "En") {
+      if (button !== "{bksp}" && button !== "" && button !== "{enter}" && button !== "{space}" && button !== "{shift}" && button !== "{lock}" && button !== "{tab}" && button !== "Th" && button !== "En") {
         keyword += button
       } else if (button === "{bksp}") {
         keyword = keyword.substring(0, keyword.length - 1)
@@ -337,7 +321,6 @@ class ReceiveTool extends Component {
     }
 
   };
-
   _handleShift = () => {
 
     const layoutName = this.state.layoutName;
@@ -350,7 +333,6 @@ class ReceiveTool extends Component {
   _showDisplay() {
     const { current_display } = this.state;
     if (current_display === "") {
-
       return (
         <div className="container" >
           <h1 className="header">ReceiveTool</h1>
@@ -367,12 +349,11 @@ class ReceiveTool extends Component {
                 aria-label="Username"
                 aria-describedby="basic-addon1"
                 value={this.state.keyword}
-              // onChange={(e) => this.setState({ keyword: e.target.value })}
+                onChange={() => this._onChange()}
               >
               </input>
             </Col>
             <Col md={4}>
-
               <button
                 type="button"
                 className="btn btn-primary"
@@ -400,7 +381,7 @@ class ReceiveTool extends Component {
                         <CardImg
                           variant="top"
                           style={{ width: '150px', height: '150px' }}
-                          src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
+                          {...item.product_image ? ({ src: GLOBAL.BASE_URL.URL_IMG + item.product_image }) : ({ src: imgdefault })} />
                         <CardBody>
                           <p style={{ height: '50px' }}>
                             <CardTitle>{item.product_code}</CardTitle>
@@ -460,7 +441,10 @@ class ReceiveTool extends Component {
                           item.product_name,
                           item.product_code,
                         )}>
-                        <CardImg variant="top" src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
+                        <CardImg
+                          variant="top"
+                          style={{ width: '150px', height: '150px' }}
+                          {...item.product_image ? ({ src: GLOBAL.BASE_URL.URL_IMG + item.product_image }) : ({ src: imgdefault })} />
                         <CardBody>
                           <p style={{ height: '70px' }}>
                             <CardTitle>{item.stock_layout_code}</CardTitle>
@@ -519,7 +503,6 @@ class ReceiveTool extends Component {
         </div>
       );
     }
-
     else if (current_display === "finishAddtool") {
       return (
         <div className="container">
@@ -574,7 +557,7 @@ class ReceiveTool extends Component {
                     aria-label="Username"
                     aria-describedby="basic-addon1"
                     value={this.state.keyword}
-                  // onChange={(e) => this.setState({ tool_qty_Takeout: e.target.value })}
+                    onChange={() => this._onChange()}
                   >
                   </input>
                 </Col>
@@ -694,7 +677,7 @@ class ReceiveTool extends Component {
                     aria-label="Username"
                     aria-describedby="basic-addon1"
                     value={this.state.keyword}
-                  // onChange={(e) => this.setState({ tool_qty_Takeout: e.target.value })}
+                    onChange={() => this._onChange()}
                   >
                   </input>
                 </Col>
@@ -752,7 +735,6 @@ class ReceiveTool extends Component {
         </div>
       );
     }
-
     else if (current_display === "finishAddtool2") {
       return (
         <div className="container">

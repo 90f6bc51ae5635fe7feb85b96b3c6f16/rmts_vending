@@ -7,7 +7,7 @@ import { Loading2 } from "../../component/revel-strap";
 import { Link } from 'react-router-dom'
 import Swal from "sweetalert2"
 import GLOBAL from "../../GLOBAL";
-
+import imgdefault from "../../../src/assets/img/default.jpg"
 import TakeoutAssignJobModel from "../../models/TakeoutAssignJobModel";
 const takeoutassignjob_Model = new TakeoutAssignJobModel();
 
@@ -304,7 +304,7 @@ class TakeoutTool extends Component {
       })
     }
     if (this.state.current_display === "no-assign-job") {
-      if (button !== "{bksp}" && button !== "" && button !== "{enter}" && button !== "{shift}" && button !== "{lock}" && button !== "{tab}" && button !== "Th" && button !== "En") {
+      if (button !== "{bksp}" && button !== "" && button !== "{enter}" && button !== "{space}" && button !== "{shift}" && button !== "{lock}" && button !== "{tab}" && button !== "Th" && button !== "En") {
         keyword += button
       } else if (button === "{bksp}") {
         keyword = keyword.substring(0, keyword.length - 1)
@@ -390,7 +390,7 @@ class TakeoutTool extends Component {
               </Card>
             </Col>
             <Col md={2} />
-            {/* <Col md={2}/> */}
+
             <Col md={2}>
               <Card
                 className="btn"
@@ -423,7 +423,7 @@ class TakeoutTool extends Component {
       );
     } else if (current_display === "assign-job") { //หน้าเลือกงาน
       return (
-        <p>
+        <div>
           <CardBody>
             <div style={{ display: "grid", gridTemplateColumns: "auto auto auto auto auto " }}>
               {this.state.jobs.map((item, idx) => (
@@ -460,7 +460,7 @@ class TakeoutTool extends Component {
                   </button>
             </Col>
           </Row>
-        </p>
+        </div>
       );
     } else if (current_display === "job-op") { //หน้าเลือกOP
       return (
@@ -631,7 +631,7 @@ class TakeoutTool extends Component {
                       <CardImg
                         variant="top"
                         style={{ width: '150px', height: '150px' }}
-                        src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
+                        {...item.product_image ? ({ src: GLOBAL.BASE_URL.URL_IMG + item.product_image }) : ({ src: imgdefault })} />
                       <CardBody>
                         <p style={{ height: '50px' }}>
                           <CardTitle>{item.job_op_tools_use_code}</CardTitle>
@@ -693,7 +693,7 @@ class TakeoutTool extends Component {
                       <CardImg
                         variant="top"
                         style={{ width: '150px', height: '150px' }}
-                        src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
+                        {...item.product_image ? ({ src: GLOBAL.BASE_URL.URL_IMG + item.product_image }) : ({ src: imgdefault })} />
                       <CardBody>
                         <p style={{ height: '70px' }}>
                           <CardTitle>{item.stock_layout_code}</CardTitle>
@@ -781,7 +781,9 @@ class TakeoutTool extends Component {
                     placeholder="จำนวนเบิก"
                     aria-label="Username"
                     aria-describedby="basic-addon1"
-                    value={this.state.keyword}>
+                    value={this.state.keyword}
+                    onChange={() => this._onChange()}
+                  >
                   </input>
                 </Col>
                 <Col md={4}>
@@ -870,6 +872,7 @@ class TakeoutTool extends Component {
                 aria-describedby="basic-addon1"
                 disabled
                 value={this.state.tool_qty}
+                onChange={() => this._onChange()}
               />
             </Col>
           </Row>
@@ -880,7 +883,6 @@ class TakeoutTool extends Component {
                 <Col md={12}>
                   {this.state.tool_qty_In && this.state.status_DoorClose_Finish ? (
                     <button
-
                       className="btn btn-success"
                       style={{ width: '100%' }}
                       onClick={
@@ -921,7 +923,6 @@ class TakeoutTool extends Component {
         </div>
       );
     } else if (current_display === "no-assign-job") { //หน้าไม่ระบุงานหน้าค้นหา
-      //todo:
       return (
         <div className="container" >
           <Row className="app-footer">
@@ -937,7 +938,7 @@ class TakeoutTool extends Component {
                 aria-label="Username"
                 aria-describedby="basic-addon1"
                 value={this.state.keyword}
-              // onChange={(e) => this.setState({ keyword: e.target.value })}
+                onChange={() => this._onChange()}
               >
               </input>
             </Col>
@@ -969,7 +970,7 @@ class TakeoutTool extends Component {
                           <CardImg
                             variant="top"
                             style={{ width: '150px', height: '150px' }}
-                            src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
+                            {...item.product_image ? ({ src: GLOBAL.BASE_URL.URL_IMG + item.product_image }) : ({ src: imgdefault })} />
                           <CardBody>
                             <p style={{ height: '50px' }}>
                               <CardTitle>{item.product_code}</CardTitle>
@@ -993,6 +994,7 @@ class TakeoutTool extends Component {
                   onClick={() =>
                     this.setState({
                       current_display: "",
+                      compartments: [],
                     })}>
                   ย้อนกลับ
                   </button>
@@ -1030,7 +1032,7 @@ class TakeoutTool extends Component {
                       <CardImg
                         variant="top"
                         style={{ width: '150px', height: '150px' }}
-                        src={GLOBAL.BASE_URL.URL_IMG + item.product_image} />
+                        {...item.product_image ? ({ src: GLOBAL.BASE_URL.URL_IMG + item.product_image }) : ({ src: imgdefault })} />
                       <CardBody>
                         <p style={{ height: '70px' }}>
                           <CardTitle>{item.stock_layout_code}</CardTitle>
@@ -1112,7 +1114,7 @@ class TakeoutTool extends Component {
                     aria-label="Username"
                     aria-describedby="basic-addon1"
                     value={this.state.keyword}
-
+                    onChange={() => this._onChange()}
                   >
                   </input>
                 </Col>
@@ -1204,6 +1206,7 @@ class TakeoutTool extends Component {
                 aria-describedby="basic-addon1"
                 disabled
                 value={this.state.tool_qty}
+                onChange={() => this._onChange()}
               />
             </Col>
           </Row>
