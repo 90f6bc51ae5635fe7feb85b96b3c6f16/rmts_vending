@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import { Col, Row, Card, CardBody, CardHeader, CardTitle, } from "reactstrap";
-import { Link, NavLink } from 'react-router-dom'
+import { Card, CardBody, CardHeader, Col, Row ,} from "reactstrap";
+import { Link } from 'react-router-dom'
+import Swal from "sweetalert2";
 import { Loading, Table } from "../../../../component/revel-strap";
 
 import MachineTypeModel from "../../../../models/MachineTypeModel";
@@ -28,33 +29,63 @@ class MachineType extends Component {
                 const machinetype = await machinetype_model.getMachineTypeBy({
                     params: params,
                 });
-                console.log("machinetype",machinetype);
+                console.log("machinetype", machinetype);
                 this.setState({
                     loading: false,
                     machinetype: machinetype,
-
                 });
             }
-
         );
-        
+    }
+    _onDelete(code) {
+        console.log(code);
+        Swal.fire({
+            title: "Are you sure ?",
+            text: "Confirm to delete this item",
+            icon: "warning",
+            showCancelButton: true,
+        }).then((result) => {
+
+            if (result.value) {
+                this.setState({
+                    loading: true,
+                }, () => {
+                    machinetype_model.deleteMachineTypeByCode({ machine_type_code: code }).then((res) => {
+
+                        if (res.require) {
+                            Swal.fire("Success Deleted!", "", "success");
+                            this._fetchData();
+                        } else {
+                            this.setState({
+                                loading: false,
+                            }, () => {
+                                Swal.fire("Sorry, Someting worng !", "", "error");
+                            });
+                        }
+                    });
+                });
+            }
+        });
     }
 
     render() {
-        
+
         return (
             <div>
                 <Loading show={this.state.loading} />
                 <Card>
                     <CardHeader>
                         จัดการประเภทเครื่องจักร / Machine Type Management
+                        <Link to={`/settinganother/machine/machinetype/insert`} className="btn btn-success float-right" >
+                            <i className="fa fa-plus" aria-hidden="true"></i> ประเภทเครื่องจักร
+                        </Link>
                     </CardHeader>
                     <CardBody>
                         <Table
                             onChange={(e) => this._fetchData(e)}
                             showRowNo={true}
-                              dataSource={this.state.machinetype.data}
-                              dataTotal={this.state.machinetype.total}
+                            dataSource={this.state.machinetype.data}
+                            dataTotal={this.state.machinetype.total}
                             rowKey="machine_type_code"
                             columns={[
                                 {
@@ -76,22 +107,28 @@ class MachineType extends Component {
                                     title: "",
                                     dataIndex: "",
                                     render: (cell) => {
+
                                         const row_accessible = [];
 
-                                        // if (permission_edit) {
-                                        //   row_accessible.push(
-                                        //     <Link key="update" to={`/machine-type/update/${cell.machine_type_code}`} title="แก้ไขรายการ"  >
-                                        //       <i style={{ fontSize: "18px", marginLeft: "8px" }} className="fa fa-pencil-square-o" aria-hidden="true" ></i>
-                                        //     </Link>
-                                        //   );
-                                        // }
-
                                         row_accessible.push(
-                                            <i style={{ fontSize: "18px", color: "red", marginLeft: "5px" }} key="delete" type="button" onClick={() => this._onDelete(cell.machine_type_code)} title="ลบรายการ" className="fa fa-remove" aria-hidden="true"></i>
+                                            <Link key="update" to={`/settinganother/machine/machinetype/update/${cell.machine_type_code}`} title="แก้ไขรายการ"  >
+                                                <button
+                                                    className="btn btn-info"
+                                                    // onClick={() => this._onDelete(cell.machine_type_code)}
+                                                >แก้ไข</button>
+                                                {/* <i style={{ fontSize: "18px", marginLeft: "8px" }} className="fa fa-pencil-square-o" aria-hidden="true" ></i> */}
+                                            </Link>
                                         );
 
+                                        row_accessible.push(
+                                            <button
+                                                className="btn btn-danger"
+                                                onClick={() => this._onDelete(cell.machine_type_code)}
+                                            >ลบ</button>
+                                        );
 
                                         return row_accessible;
+
                                     },
                                     width: 80,
                                 },
@@ -99,6 +136,17 @@ class MachineType extends Component {
                         />
                     </CardBody>
                 </Card>
+                <Row className="app-footer">
+                    <Col md={10}></Col>
+                    <Col md={2}>
+                        <Link to={`/settinganother/machine`}>
+                            <button
+                                className="btn btn-dark">
+                                กลับไปหน้าหลัก
+                            </button>
+                        </Link>
+                    </Col>
+                </Row>
             </div>
         );
     }

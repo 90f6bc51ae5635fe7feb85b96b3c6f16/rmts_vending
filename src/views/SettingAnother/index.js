@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 const View = React.lazy(() => import('./view'));
-const Machine = React.lazy(()=> import('./Machine'));
-const User = React.lazy(()=> import('./User'));
-const Stock = React.lazy(()=> import('./Stock'));
-const Product = React.lazy(()=> import('./Product'));
+const Machine = React.lazy(() => import('./Machine'));
+const User = React.lazy(() => import('./User'));
+const Stock = React.lazy(() => import('./Stock'));
+const Product = React.lazy(() => import('./Product'));
 
 class SettingAnother extends Component {
   render() {

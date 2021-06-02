@@ -24,6 +24,7 @@ class Machine extends Component {
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>เครื่องจักร</CardTitle>
+                                    <CardTitle>(Machine)</CardTitle>
                                 </CardBody>
                             </Card>
                         </Link>
@@ -36,6 +37,7 @@ class Machine extends Component {
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>ประเภทเครื่องจักร</CardTitle>
+                                    <CardTitle>(Machine Type)</CardTitle>
                                 </CardBody>
                             </Card>
                         </Link>
@@ -51,6 +53,7 @@ class Machine extends Component {
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>โมเดลเครื่องจักร</CardTitle>
+                                    <CardTitle>(Machine Model)</CardTitle>
                                 </CardBody>
                             </Card>
                         </Link>
@@ -63,6 +66,7 @@ class Machine extends Component {
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>แบนด์เครื่องจักร</CardTitle>
+                                    <CardTitle>(Machine Brand)</CardTitle>
                                 </CardBody>
                             </Card>
                         </Link>
