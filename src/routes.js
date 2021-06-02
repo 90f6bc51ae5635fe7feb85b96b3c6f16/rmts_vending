@@ -5,7 +5,7 @@ const ReceiveTool = React.lazy(() => import('./views/ReceiveTool'));
 const TakeoutTool = React.lazy(() => import('./views/TakeoutTool'));
 const SettingMachine = React.lazy(() => import('./views/SettingMachine'));
 const SettingAnother = React.lazy(() => import('./views/SettingAnother'));
-const MachineManagement = React.lazy(() => import('./views/SettingAnother/Machine/MachineManagement'));
+const Machine = React.lazy(() => import('./views/SettingAnother/Machine/Machine'));
 const MachineModel = React.lazy(() => import('./views/SettingAnother/Machine/MachineModel'));
 const MachineBrand = React.lazy(() => import('./views/SettingAnother/Machine/MachineBrand'));
 const MachieneType = React.lazy(() => import('./views/SettingAnother/Machine/MachineType'));
@@ -19,7 +19,7 @@ const routes = [
   { path: '/takeouttool', name: 'TakeoutTool', component: TakeoutTool },
   { path: '/settingmachine', name: 'SettingMachine', component: SettingMachine },
   { path: '/settinganother/machine/machinetype', name: 'MachieneType', component: MachieneType },
-  { path: '/settinganother/machine/machinemanagement', name: 'MachineManagement', component: MachineManagement },
+  { path: '/settinganother/machine/machine', name: 'Machine', component: Machine },
   { path: '/settinganother/machine/machinemodel', name: 'MachineModel', component: MachineModel },
   { path: '/settinganother/machine/machinebrand', name: 'MachineBrand', component: MachineBrand },
   { path: '/settinganother', name: 'SettingAnother', component: SettingAnother },

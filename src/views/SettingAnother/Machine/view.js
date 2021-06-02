@@ -19,7 +19,7 @@ class Machine extends Component {
                 <Row>
                     <Col md={2} />
                     <Col md={2}>
-                        <Link exact to={`/settinganother/machine/machinemanagement`} style={{ width: '100%' }}>
+                        <Link exact to={`/settinganother/machine/machine`} style={{ width: '100%' }}>
                             <Card className="btn">
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>

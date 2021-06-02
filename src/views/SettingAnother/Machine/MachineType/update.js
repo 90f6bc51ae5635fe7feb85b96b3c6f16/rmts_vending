@@ -27,7 +27,7 @@ class Update extends React.Component {
     this.state = {
       loading: true,
       show_modal: false,
-      title_modal:'',
+      title_modal: '',
       machine_type_code: '',
       machine_type_name: '',
 
@@ -36,56 +36,56 @@ class Update extends React.Component {
 
   componentDidMount() {
     this.setState(
-        {
-          loading: true,
-        },
-        async () => {
-          const { code } = this.props.match.params;
-  
-          const machinetype = await machinetype_model.getMachineTypeByCode({
-            machine_type_code: code,
+      {
+        loading: true,
+      },
+      async () => {
+        const { code } = this.props.match.params;
+
+        const machinetype = await machinetype_model.getMachineTypeByCode({
+          machine_type_code: code,
+        });
+
+        if (machinetype.require === false) {
+          Swal.fire({
+            title: "ข้อผิดพลาด !",
+            text: "ไม่สามารถโหลดข้อมูล",
+            icon: "error",
           });
-  
-          if (machinetype.require === false) {
-            Swal.fire({
-              title: "ข้อผิดพลาด !",
-              text: "ไม่สามารถโหลดข้อมูล",
-              icon: "error",
-            });
-            this.props.history.push("/machine-type");
-          } else if (machinetype.data.length === 0) {
-            Swal.fire({
-              title: "ไม่พบรายการนี้ในระบบ !",
-              text: code,
-              icon: "warning",
-            });
-            this.props.history.push("/machine-type");
-          } else {
-            const { machine_type_code, machine_type_name } = machinetype.data[0];
-  
-            this.setState({
-              loading: false,
-              machine_type_code: machine_type_code,
-              machine_type_name: machine_type_name,
-            });
-          }
+          this.props.history.push("/machine-type");
+        } else if (machinetype.data.length === 0) {
+          Swal.fire({
+            title: "ไม่พบรายการนี้ในระบบ !",
+            text: code,
+            icon: "warning",
+          });
+          this.props.history.push("/machine-type");
+        } else {
+          const { machine_type_code, machine_type_name } = machinetype.data[0];
+
+          this.setState({
+            loading: false,
+            machine_type_code: machine_type_code,
+            machine_type_name: machine_type_name,
+          });
         }
-      );
+      }
+    );
   }
 
-//   async _fetchData() {
-//     const now = new Date()
-//     const last_code = await machinetype_model.getMachineTypeLastCode({
-//       code: `MTC${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, "0")}`,
-//       digit: 3,
-//     })
+  //   async _fetchData() {
+  //     const now = new Date()
+  //     const last_code = await machinetype_model.getMachineTypeLastCode({
+  //       code: `MTC${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, "0")}`,
+  //       digit: 3,
+  //     })
 
-//     this.setState({
-//       loading: false,
+  //     this.setState({
+  //       loading: false,
 
-//       machine_type_code: last_code.data,
-//     })
-//   }
+  //       machine_type_code: last_code.data,
+  //     })
+  //   }
 
   _handleSubmit(event) {
     event.preventDefault()
@@ -126,9 +126,12 @@ class Update extends React.Component {
   }
 
   _inputdata = (e) => {
-    this.setState({
-      machine_type_name: e
-    })
+
+    if (this.state.title_modal === "ชื่อผู้ประเภทเครื่องจักร") {
+      this.setState({
+        machine_type_name: e
+      })
+    }
   }
 
   render() {
@@ -162,9 +165,9 @@ class Update extends React.Component {
                       type="text"
                       value={this.state.machine_type_name}
                       onClick={() => this.setState({
-                          show_modal: true,
-                          title_modal: 'ชื่อผู้ประเภทเครื่องจักร',
-                         })}
+                        show_modal: true,
+                        title_modal: 'ชื่อผู้ประเภทเครื่องจักร',
+                      })}
 
                       placeholder="ชื่อประเภทเครื่องจักร "
                     />
@@ -185,7 +188,7 @@ class Update extends React.Component {
 
         <Modalkeyboard
           show={this.state.show_modal}
-          machine_type_name={this.state.machine_type_name}
+          data_modal={this.state.machine_type_name}
           title_modal={this.state.title_modal}
           onSave={this._inputdata}
           onClose={() => this.setState({ show_modal: false })}

@@ -19,7 +19,7 @@ class ModalKeyboard extends React.Component {
         super(props)
         this.state = {
             keyword: '',
-            title_modal:'',
+            title_modal: '',
             layoutName: "default",
             languageKeyboard: "english",
         }
@@ -34,11 +34,11 @@ class ModalKeyboard extends React.Component {
     _fetchData() {
         let title_modal = this.props.title_modal
         let data_modal
-        if(this.props.data_modal){
+        if (this.props.data_modal) {
             data_modal = this.props.data_modal
         }
-        else{
-            data_modal ='';
+        else {
+            data_modal = '';
         }
 
         this.setState({ loading: true },
@@ -143,18 +143,18 @@ class ModalKeyboard extends React.Component {
                                 <Input
                                     type="text"
                                     value={this.state.keyword}
-                                    // onChange={(e) => this.setState({ product_unit: e.target.value })} 
-                                    />
+                                // onChange={(e) => this.setState({ product_unit: e.target.value })} 
+                                />
                                 <button
                                     className="btn btn-success"
-                                onClick={() => this._handleSave()}
+                                    onClick={() => this._handleSave()}
                                 >save
                                 </button>
                                 <button
                                     className="btn btn-danger"
-                                onClick={() => this.setState({
-                                    keyword:'',
-                                })}
+                                    onClick={() => this.setState({
+                                        keyword: '',
+                                    })}
                                 >Reset
                                 </button>
                             </FormGroup>

@@ -27,7 +27,7 @@ class Insert extends React.Component {
     this.state = {
       loading: true,
       show_modal: false,
-      title_modal:'',
+      title_modal: '',
       machine_type_code: '',
       machine_type_name: '',
 
@@ -128,9 +128,9 @@ class Insert extends React.Component {
                       value={this.state.machine_type_name}
                       // onChange={(e) => this.setState({ machine_type_name: e.target.value })}
                       onClick={() => this.setState({
-                          show_modal: true, 
-                          title_modal: 'ชื่อผู้ประเภทเครื่องจักร',
-                         })}
+                        show_modal: true,
+                        title_modal: 'ชื่อผู้ประเภทเครื่องจักร',
+                      })}
 
                       placeholder="ชื่อประเภทเครื่องจักร "
                     />

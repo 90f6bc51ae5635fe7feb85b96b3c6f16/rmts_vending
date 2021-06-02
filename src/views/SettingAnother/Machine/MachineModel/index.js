@@ -1,2 +1,20 @@
-import View from './view'
-export default View;
+import React, { Component } from 'react';
+import { Route, Switch } from 'react-router-dom';
+
+const View = React.lazy(() => import('./view'));
+const Insert = React.lazy(() => import('./insert'));
+// const Update = React.lazy(() => import('./update'));
+
+
+class MachineModel extends Component {
+    render() {
+        return (
+            <Switch>
+                {/* <Route exact path="/settinganother/machine/machine/update/:code" render={props => <Update {...props} />} /> */}
+                <Route exact path="/settinganother/machine/machinemodel/insert" render={props => <Insert {...props} />} />
+                <Route path="/settinganother/machine/machinemodel" render={props => <View {...props} />} />
+            </Switch>
+        )
+    }
+}
+export default (MachineModel);

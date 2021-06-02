@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardBody, CardHeader, Col, Row ,} from "reactstrap";
+import { Card, CardBody, CardHeader, Col, Row, } from "reactstrap";
 import { Link } from 'react-router-dom'
 import Swal from "sweetalert2";
 import { Loading, Table } from "../../../../component/revel-strap";
@@ -113,18 +113,20 @@ class MachineType extends Component {
                                         row_accessible.push(
                                             <Link key="update" to={`/settinganother/machine/machinetype/update/${cell.machine_type_code}`} title="แก้ไขรายการ"  >
                                                 <button
-                                                    className="btn btn-info"
-                                                    // onClick={() => this._onDelete(cell.machine_type_code)}
-                                                >แก้ไข</button>
-                                                {/* <i style={{ fontSize: "18px", marginLeft: "8px" }} className="fa fa-pencil-square-o" aria-hidden="true" ></i> */}
+                                                    style={{ width: "58.6px" }}
+                                                    className="btn btn-info">
+                                                    แก้ไข
+                                                </button>
                                             </Link>
                                         );
 
                                         row_accessible.push(
                                             <button
+                                                style={{ width: "58.6px" }}
                                                 className="btn btn-danger"
-                                                onClick={() => this._onDelete(cell.machine_type_code)}
-                                            >ลบ</button>
+                                                onClick={() => this._onDelete(cell.machine_type_code)}>
+                                                ลบ
+                                            </button>
                                         );
 
                                         return row_accessible;
