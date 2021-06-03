@@ -127,11 +127,10 @@ class Update extends React.Component {
 
   _inputdata = (e) => {
 
-    if (this.state.title_modal === "ชื่อผู้ประเภทเครื่องจักร") {
-      this.setState({
-        machine_type_name: e
-      })
-    }
+    this.setState({
+      machine_type_name: e
+    })
+
   }
 
   render() {
@@ -160,16 +159,17 @@ class Update extends React.Component {
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <label>ชื่อผู้ประเภทเครื่องจักร  <font color="#F00"><b>*</b></font></label>
+                    <label>ชื่อประเภทเครื่องจักร  <font color="#F00"><b>*</b></font></label>
                     <Input
                       type="text"
+                      placeholder="ชื่อประเภทเครื่องจักร "
                       value={this.state.machine_type_name}
                       onClick={() => this.setState({
                         show_modal: true,
-                        title_modal: 'ชื่อผู้ประเภทเครื่องจักร',
+                        title_modal: 'ชื่อประเภทเครื่องจักร',
                       })}
 
-                      placeholder="ชื่อประเภทเครื่องจักร "
+
                     />
                     <p className="text-muted"> Example : </p>
                   </FormGroup>

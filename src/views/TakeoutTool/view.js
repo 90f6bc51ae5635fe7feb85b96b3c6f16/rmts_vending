@@ -268,6 +268,7 @@ class TakeoutTool extends Component {
   };
   _onKeyPress = button => {
     let keyword = this.state.keyword
+    let space = " "
     if (button === "{shift}" || button === "{lock}") this._handleShift();
     if (this.state.current_display === "no-assign-firsttakeouttool" || this.state.current_display === "assign-firsttakeouttool") {
       if (button !== "backspace" && button !== "") {
@@ -308,6 +309,9 @@ class TakeoutTool extends Component {
         keyword += button
       } else if (button === "{bksp}") {
         keyword = keyword.substring(0, keyword.length - 1)
+      }
+      else if (button === "{space}") {
+        keyword += space
       }
       this.setState({
         keyword: keyword,

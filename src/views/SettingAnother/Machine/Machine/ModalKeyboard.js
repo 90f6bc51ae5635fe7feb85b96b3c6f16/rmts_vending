@@ -96,7 +96,8 @@ class ModalKeyboard extends React.Component {
     }
     _onKeyPress = button => {
         let keyword = this.state.keyword
-
+        let space = " "
+        if (button === "{shift}" || button === "{lock}") this._handleShift();
         if (button === "Th") {
             this.setState({
                 languageKeyboard: "thai",
@@ -107,16 +108,28 @@ class ModalKeyboard extends React.Component {
                 languageKeyboard: "english",
             })
         }
+
         if (button !== "{bksp}" && button !== "" && button !== "{enter}" && button !== "{space}" && button !== "{shift}" && button !== "{lock}" && button !== "{tab}" && button !== "Th" && button !== "En") {
             keyword += button
-        } else if (button === "{bksp}") {
+        }
+
+        else if (button === "{bksp}") {
             keyword = keyword.substring(0, keyword.length - 1)
+        }
+        else if (button === "{space}") {
+            keyword += space
         }
         this.setState({
             keyword: keyword,
         })
 
 
+    };
+    _handleShift = () => {
+        const layoutName = this.state.layoutName;
+        this.setState({
+            layoutName: layoutName === "default" ? "shift" : "default"
+        });
     };
     _handleSave = () => {
         const keyword = this.state.keyword
@@ -133,7 +146,7 @@ class ModalKeyboard extends React.Component {
                 isOpen={this.props.show}
                 toggle={this._handleClose}>
                 <ModalHeader toggle={this._handleClose}>
-                    <label>{this.state.title_modal}<font color="#F00"><b>*</b></font></label>
+                    <label>{this.state.title_modal}</label>
                 </ModalHeader>
                 <ModalBody>
                     <Row>

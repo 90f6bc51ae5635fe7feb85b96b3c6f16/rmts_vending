@@ -11,7 +11,7 @@ class DefaultLayout extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      toggled: true,
+      toggled: false,
       _LOGIN_TOKEN: [],
       _PERMISSION_TOKEN: [],
     }

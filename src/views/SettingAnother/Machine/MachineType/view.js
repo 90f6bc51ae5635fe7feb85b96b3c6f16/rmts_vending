@@ -143,8 +143,8 @@ class MachineType extends Component {
                     <Col md={2}>
                         <Link to={`/settinganother/machine`}>
                             <button
-                                className="btn btn-dark">
-                                กลับไปหน้าหลัก
+                                className="btn btn-secondary">
+                                ย้อนกลับ
                             </button>
                         </Link>
                     </Col>

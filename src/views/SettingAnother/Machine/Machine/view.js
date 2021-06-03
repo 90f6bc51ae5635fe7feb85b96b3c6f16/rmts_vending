@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Col, Row, Card, CardBody,  CardHeader, } from "reactstrap";
+import { Col, Row, Card, CardBody, CardHeader, } from "reactstrap";
 import { Link } from 'react-router-dom'
 import { Loading, Table } from "../../../../component/revel-strap";
 import Swal from "sweetalert2";
@@ -191,8 +191,8 @@ class Machine extends Component {
           <Col md={2}>
             <Link to={`/settinganother/machine`}>
               <button
-                className="btn btn-dark">
-                กลับไปหน้าหลัก
+                className="btn btn-secondary">
+                ย้อนกลับ
                             </button>
             </Link>
           </Col>

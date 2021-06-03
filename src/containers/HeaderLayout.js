@@ -5,7 +5,7 @@ class HeaderLayout extends React.Component {
     super(props)
     this.state = {
       user_login: JSON.parse(localStorage.getItem('user_login')),
-      show: false
+      show: false,
     }
   }
   render() {

@@ -18,9 +18,7 @@ import Modalkeyboard from "./ModalKeyboard"
 import MachineModelModel from "../../../../models/MachineModelModel"
 const machinemodel_model = new MachineModelModel();
 
-
-
-class Insert extends React.Component {
+class Update extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -35,77 +33,75 @@ class Insert extends React.Component {
     }
 
     componentDidMount() {
-        this._fetchData();
-    }
+        this.setState(
+          {
+            loading: true,
+          },
+          async () => {
+            const { code } = this.props.match.params;
+    
+            const machinemodel = await machinemodel_model.getMachineModelByCode({
+              machine_model_code: code,
+            });
+    
+            if (machinemodel.require === false) {
+              Swal.fire({
+                title: "ข้อผิดพลาด !",
+                text: "ไม่สามารถโหลดข้อมูล",
+                icon: "error",
+              });
+              this.props.history.push("/machine-model");
+            } else if (machinemodel.data.length === 0) {
+              Swal.fire({
+                title: "ไม่พบรายการนี้ในระบบ !",
+                text: code,
+                icon: "warning",
+              });
+              this.props.history.push("/machine-model");
+            } else {
+              const { machine_model_code, machine_model_name } =
+                machinemodel.data[0];
+    
+              this.setState({
+                loading: false,
+                machine_model_code: machine_model_code,
+                machine_model_name: machine_model_name,
+              });
+            }
+          }
+        );
+      }
+    
 
-    async _fetchData() {
-        const now = new Date();
-        const last_code = await machinemodel_model.generateMachineModelLastCode({
-            code: `SP${now.getFullYear()}${(now.getMonth() + 1)
-                .toString()
-                .padStart(2, "0")}`,
-            digit: 3,
-        });
-
-        this.setState({
-            loading: false,
-            machine_model_code: last_code.data,
-        });
-    }
-
-    _handleSubmit(event) {
-        event.preventDefault()
+      async _handleSubmit(event) {
+        event.preventDefault();
+    
         if (this._checkSubmit()) {
-            this.setState(
-                {
-                    loading: true,
-                },
-                async () => {
-                    const res = await machinemodel_model.insertMachineModel({
-                        machine_model_code: this.state.machine_model_code,
-                        machine_model_name: this.state.machine_model_name,
-                    });
-
-                    if (res.require) {
-                        Swal.fire({ title: "บันทึกข้อมูลสำเร็จ !", icon: "success" });
-                        this.props.history.push("/settinganother/machine/machinemodel");
-                    } else {
-                        this.setState(
-                            {
-                                loading: false,
-                            },
-                            () => {
-                                Swal.fire({
-                                    title: "เกิดข้อผิดพลาดในการบันทึก !",
-                                    icon: "error",
-                                });
-                            }
-                        );
-                    }
-                }
-            );
+          const res = await machinemodel_model.updateMachineModelBy({
+            machine_model_code: this.state.machine_model_code,
+            machine_model_name: this.state.machine_model_name,
+          });
+    
+          if (res.require) {
+            Swal.fire("อัพเดตข้อมูลสำเร็จ !", "", "success");
+            this.props.history.push("/settinganother/machine/machinemodel");
+          } else {
+            Swal.fire("เกิดข้อผิดพลาด !", "", "error");
+          }
         }
-    }
-
-    _checkSubmit() {
+      }
+    
+      _checkSubmit() {
         if (this.state.machine_model_code === "") {
-            Swal.fire({
-                title: "กรุณาระบุชื่อโมเดลเครื่่องจักร !",
-                text: "Please Enter name",
-                icon: "warning",
-            });
-            return false;
+          Swal.fire("กรุณาระบุชื่อผู้ขาย / Please Enter name");
+          return false;
         } else if (this.state.machine_model_name === "") {
-            Swal.fire({
-                title: "กรุณาระบุชื่อโมเดลเครื่่องจักร !",
-                text: "Please Enter Full Name",
-                icon: "warning",
-            });
-            return false;
+          Swal.fire("กรุณาระบุชื่อตามใบกำกับภาษี / Please Enter Full Name");
+          return false;
         } else {
-            return true;
+          return true;
         }
-    }
+      }
 
     _inputdata = (e) => {
         this.setState({
@@ -122,7 +118,7 @@ class Insert extends React.Component {
                 <Card>
                     <CardHeader>
                         <h3 className="text-header">
-                            เพิ่มโมเดลเครื่่องจักร / Add Machine Model
+                        แก้ไขโมเดลเครื่องจักร / Update Machine Model
                         </h3>
                     </CardHeader>
                     <Form onSubmit={(event) => this._handleSubmit(event)}>
@@ -199,4 +195,4 @@ class Insert extends React.Component {
     }
 }
 
-export default Insert
+export default Update

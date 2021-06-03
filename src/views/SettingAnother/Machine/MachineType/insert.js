@@ -28,6 +28,7 @@ class Insert extends React.Component {
       loading: true,
       show_modal: false,
       title_modal: '',
+      data_modal: '',
       machine_type_code: '',
       machine_type_name: '',
 
@@ -122,17 +123,19 @@ class Insert extends React.Component {
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <label>ชื่อผู้ประเภทเครื่องจักร<font color="#F00"><b>*</b></font></label>
+                    <label>ชื่อประเภทเครื่องจักร<font color="#F00"><b>*</b></font></label>
                     <Input
                       type="text"
+                      placeholder="ชื่อประเภทเครื่องจักร "
                       value={this.state.machine_type_name}
                       // onChange={(e) => this.setState({ machine_type_name: e.target.value })}
                       onClick={() => this.setState({
                         show_modal: true,
-                        title_modal: 'ชื่อผู้ประเภทเครื่องจักร',
+                        title_modal: 'ชื่อประเภทเครื่องจักร',
+                        data_modal: this.state.machine_type_name,
                       })}
 
-                      placeholder="ชื่อประเภทเครื่องจักร "
+
                     />
                     <p className="text-muted"> Example : </p>
                   </FormGroup>
@@ -151,6 +154,7 @@ class Insert extends React.Component {
 
         <Modalkeyboard
           show={this.state.show_modal}
+          data_modal={this.state.data_modal}
           title_modal={this.state.title_modal}
           onSave={this._inputdata}
           onClose={() => this.setState({ show_modal: false })}

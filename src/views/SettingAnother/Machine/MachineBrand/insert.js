@@ -15,10 +15,9 @@ import { Link } from "react-router-dom"
 import Swal from "sweetalert2"
 import { Loading } from "../../../../component/revel-strap"
 import Modalkeyboard from "./ModalKeyboard"
-import MachineModelModel from "../../../../models/MachineModelModel"
-const machinemodel_model = new MachineModelModel();
+import MachineBrandModel from "../../../../models/MachineBrandModel";
 
-
+const machinebrand_model = new MachineBrandModel();
 
 class Insert extends React.Component {
     constructor(props) {
@@ -28,8 +27,8 @@ class Insert extends React.Component {
             title_modal: '',
             loading: true,
             show_modal: false,
-            machine_type_code: '',
-            machine_type_name: '',
+            machine_brand_code: "",
+            machine_brand_name: "",
 
         }
     }
@@ -40,8 +39,8 @@ class Insert extends React.Component {
 
     async _fetchData() {
         const now = new Date();
-        const last_code = await machinemodel_model.generateMachineModelLastCode({
-            code: `SP${now.getFullYear()}${(now.getMonth() + 1)
+        const last_code = await machinebrand_model.generateMachineLastCode({
+            code: `MBC${now.getFullYear()}${(now.getMonth() + 1)
                 .toString()
                 .padStart(2, "0")}`,
             digit: 3,
@@ -49,26 +48,27 @@ class Insert extends React.Component {
 
         this.setState({
             loading: false,
-            machine_model_code: last_code.data,
+            machine_brand_code: last_code.data,
         });
     }
 
     _handleSubmit(event) {
-        event.preventDefault()
+        event.preventDefault();
+
         if (this._checkSubmit()) {
             this.setState(
                 {
                     loading: true,
                 },
                 async () => {
-                    const res = await machinemodel_model.insertMachineModel({
-                        machine_model_code: this.state.machine_model_code,
-                        machine_model_name: this.state.machine_model_name,
+                    const res = await machinebrand_model.insertMachineBrand({
+                        machine_brand_code: this.state.machine_brand_code,
+                        machine_brand_name: this.state.machine_brand_name,
                     });
 
                     if (res.require) {
                         Swal.fire({ title: "บันทึกข้อมูลสำเร็จ !", icon: "success" });
-                        this.props.history.push("/settinganother/machine/machinemodel");
+                        this.props.history.push("/settinganother/machine/machinebrand");
                     } else {
                         this.setState(
                             {
@@ -88,17 +88,17 @@ class Insert extends React.Component {
     }
 
     _checkSubmit() {
-        if (this.state.machine_model_code === "") {
+        if (this.state.machine_brand_code === "") {
             Swal.fire({
-                title: "กรุณาระบุชื่อโมเดลเครื่่องจักร !",
+                title: "กรุณาระบุรหัส !",
                 text: "Please Enter name",
                 icon: "warning",
             });
             return false;
-        } else if (this.state.machine_model_name === "") {
+        } else if (this.state.machine_brand_name === "") {
             Swal.fire({
-                title: "กรุณาระบุชื่อโมเดลเครื่่องจักร !",
-                text: "Please Enter Full Name",
+                title: "กรุณาระบุชื่อ !",
+                text: "Please Enter  Name",
                 icon: "warning",
             });
             return false;
@@ -109,7 +109,7 @@ class Insert extends React.Component {
 
     _inputdata = (e) => {
         this.setState({
-            machine_model_name: e,
+            machine_brand_name: e,
         })
     }
 
@@ -122,7 +122,7 @@ class Insert extends React.Component {
                 <Card>
                     <CardHeader>
                         <h3 className="text-header">
-                            เพิ่มโมเดลเครื่่องจักร / Add Machine Model
+                            เพิ่มแบนด์เครื่องจักร / Add Machine brand
                         </h3>
                     </CardHeader>
                     <Form onSubmit={(event) => this._handleSubmit(event)}>
@@ -130,43 +130,42 @@ class Insert extends React.Component {
                             <Row>
                                 <Col md={4}>
                                     <label>
-                                        รหัสโมเดลเครื่่องจักร{" "}
+                                        รหัสแบนด์เครื่องจักร{" "}
                                         <font color="#F00">
                                             <b>*</b>
                                         </font>
                                     </label>
                                     <Input
                                         type="text"
-                                        value={this.state.machine_model_code}
-                                        disabled
+                                        value={this.state.machine_brand_code}
+                                        readOnly
                                         onChange={(e) =>
-                                            this.setState({ machine_model_code: e.target.value })
+                                            this.setState({ machine_brand_code: e.target.value })
                                         }
-                                        placeholder="รหัสโมเดลเครื่่องจักร"
+                                        placeholder="รหัสแบนด์เครื่องจักร"
                                     />
                                     <p className="text-muted">Example : </p>
                                 </Col>
                                 <Col md={4}>
                                     <FormGroup>
                                         <label>
-                                            ชื่อโมเดลเครื่่องจักร{" "}
+                                            ชื่อแบนด์เครื่องจักร{" "}
                                             <font color="#F00">
                                                 <b>*</b>
                                             </font>
                                         </label>
                                         <Input
                                             type="text"
-                                            value={this.state.machine_model_name}
-                                            placeholder="ชื่อโมเดลเครื่่องจักร"
+                                            value={this.state.machine_brand_name}
                                             onClick={() => this.setState({
                                                 show_modal: true,
-                                                title_modal: 'ชื่อโมเดลเครื่่องจักร',
-                                                data_modal: this.state.machine_model_name,
+                                                title_modal: 'ชื่อแบนด์เครื่องจักร',
+                                                data_modal: this.state.machine_brand_name,
                                             })}
-                                        // onChange={(e) =>
-                                        //     this.setState({ machine_model_name: e.target.value })
-                                        // }
-
+                                            // onChange={(e) =>
+                                            //     this.setState({ machine_brand_name: e.target.value })
+                                            // }
+                                            placeholder="ชื่อแบนด์เครื่องจักร"
                                         />
                                         <p className="text-muted"> Example : </p>
                                     </FormGroup>
@@ -176,11 +175,11 @@ class Insert extends React.Component {
                         <CardFooter className="text-right">
                             <Button type="submit" color="success">
                                 Save
-                            </Button>
+                        </Button>
                             <Button type="reset" color="danger">
                                 Reset
-                            </Button>
-                            <Link to="/settinganother/machine/machinemodel">
+                        </Button>
+                            <Link to="/settinganother/machine/machinebrand">
                                 <Button type="button">Back</Button>
                             </Link>
                         </CardFooter>
