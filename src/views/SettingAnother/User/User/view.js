@@ -3,17 +3,16 @@ import { Col, Row, Card, CardBody, CardHeader, } from "reactstrap";
 import { Link } from 'react-router-dom'
 import { Loading, Table } from "../../../../component/revel-strap";
 import Swal from "sweetalert2";
-import StockModel from "../../../../models/StockModel";
+import UserModel from "../../../../models/UserModel";
 
-
-const stock_model = new StockModel();
+const user_model = new UserModel()
 
 class View extends Component {
   constructor() {
     super();
     this.state = {
       loading: true,
-      stock: [],
+      users: [],
     };
   }
 
@@ -22,51 +21,43 @@ class View extends Component {
   };
 
   _fetchData(params = { pagination: { current: 1, pageSize: 20 } }) {
-    this.setState(
-      {
-        loading: true,
-      },
-      async () => {
-        const stock = await stock_model.getStock({ params: params, });
+    this.setState({
+      loading: true,
+    }, async () => {
+      const users = await user_model.getUserBy({
+        params: params,
+      })
 
-        this.setState({
-          loading: false,
-          stock,
-        });
-
-      }
-    );
+      this.setState({
+        loading: false,
+        users: users,
+      })
+    })
   }
 
   _onDelete(code) {
-    console.log(code);
     Swal.fire({
       title: "Are you sure ?",
       text: "Confirm to delete this item",
       icon: "warning",
       showCancelButton: true,
     }).then((result) => {
-
       if (result.value) {
         this.setState({
           loading: true,
-        }, () => {
-          stock_model.deleteStockByCode({ stock_code: code }).then((res) => {
-
+        }, async () => {
+          user_model.deleteUserByCode({ user_code: code }).then(res => {
             if (res.require) {
-              Swal.fire("Success Deleted!", "", "success");
-              this._fetchData();
+              Swal.fire('Success Deleted!', '', 'success')
+              this._fetchData()
             } else {
-              this.setState({
-                loading: false,
-              }, () => {
-                Swal.fire("Sorry, Someting worng !", "", "error");
-              });
+              this.setState({ loading: false })
+              Swal.fire('Sorry, Someting worng !', '', 'error')
             }
-          });
-        });
+          })
+        })
       }
-    });
+    })
   }
 
   render() {
@@ -76,66 +67,85 @@ class View extends Component {
         <Loading show={this.state.loading} />
         <Card>
           <CardHeader>
-            คลัง / Stock
+            จัดการผู้ใช้ / User
 
-              <Link to={`/settinganother/stock/stock/insert`} className="btn btn-success float-right" >
-              <i className="fa fa-plus" aria-hidden="true"></i> คลัง
+              <Link to={`/settinganother/user/user/insert`} className="btn btn-success float-right">
+              <i className="fa fa-plus" aria-hidden="true"></i> เพิ่มผู้ใช้
               </Link>
 
-          </CardHeader>
+
+          </CardHeader> 
           <CardBody>
             <Table
               onChange={(e) => this._fetchData(e)}
               showRowNo={true}
-              dataSource={this.state.stock.data}
-              dataTotal={this.state.stock.total}
-              rowKey="stock_code"
+              dataSource={this.state.users.data}
+              dataTotal={this.state.users.total}
+              rowKey='user_code'
               columns={[
                 {
-                  title: "รหัสคลัง",
-                  dataIndex: "stock_code",
+                  title: "รหัสพนักงาน",
+                  dataIndex: "user_code",
                   filterAble: true,
                   ellipsis: true,
-                  width: 240,
                 },
                 {
-                  title: "ชื่อคลัง",
-                  dataIndex: "stock_name",
+                  title: "ชื่อ",
+                  dataIndex: "fullname",
                   filterAble: true,
                   ellipsis: true,
-                  width: 240,
+                },
+
+                {
+                  title: "สิทธิ์การใช้งาน",
+                  dataIndex: "license_name",
+                  filterAble: true,
+                  ellipsis: true,
+                },
+                {
+                  title: "แผนก ",
+                  dataIndex: "department_name",
+                  filterAble: true,
+                  ellipsis: true,
+                },
+                {
+                  title: "ประเภทผู้ใช้ ",
+                  dataIndex: "user_type_name",
+                  filterAble: true,
+                  ellipsis: true,
                 },
 
                 {
                   title: "",
                   dataIndex: "",
                   render: (cell) => {
-                    const row_accessible = [];
+                    const row_accessible = []
 
 
                     row_accessible.push(
-                      <Link key="update" to={`/settinganother/stock/stock/update/${cell.stock_code}`} title="แก้ไขรายการ"  >
+                      <Link key="update" to={`/settinganother/user/user/update/${cell.user_code}`} title="แก้ไขรายการ"  >
+                        {/* <i style={{ fontSize: "18px", marginLeft: "8px" }} className="fa fa-pencil-square-o" aria-hidden="true" ></i> */}
                         <button
                           style={{ width: "58.6px" }}
                           className="btn btn-info">
                           แก้ไข
                         </button>
                       </Link>
-                    );
+                    )
 
 
                     row_accessible.push(
+                      // <i style={{ fontSize: "18px", color: "red", marginLeft: "5px" }} key="delete" type="button" onClick={() => this._onDelete(cell.user_code)} title="ลบรายการ" className="fa fa-remove" aria-hidden="true"></i>
                       <button
-                        style={{ width: "58.6px" }}
-                        className="btn btn-danger"
-                        onClick={() => this._onDelete(cell.stock_code)}
-                      >
-                        ลบ
-                      </button>
-                    );
+                      style={{ width: "58.6px" }}
+                      className="btn btn-danger"
+                      onClick={() => this._onDelete(cell.user_code)}
+                    >
+                      ลบ
+                    </button>
+                    )
 
-
-                    return row_accessible;
+                    return row_accessible
                   },
                   width: 80,
                 },
@@ -146,7 +156,7 @@ class View extends Component {
         <Row className="app-footer">
           <Col md={10}></Col>
           <Col md={2}>
-            <Link to={`/settinganother/stock`}>
+            <Link to={`/settinganother/user`}>
               <button
                 className="btn btn-secondary">
                 ย้อนกลับ

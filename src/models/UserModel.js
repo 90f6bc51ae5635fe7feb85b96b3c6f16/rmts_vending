@@ -2,13 +2,21 @@ import BaseModel from './BaseModel'
 
 export default class UserModel extends BaseModel {
     async checkLogin(data) {
-        console.log("data",data);
-        return this.authFetch({
+        return this.directFetch({
             url: 'user/checkLogin',
             method: 'POST',
             body: JSON.stringify(data),
         })
     }
+
+    async getUserLastCode(data) {
+        return this.authFetch({
+            url: 'user/getUserLastCode',
+            method: 'POST',
+            body: JSON.stringify(data),
+        })
+    }
+
     async getUserBy(data) {
         return this.authFetch({
             url: 'user/getUserBy',
@@ -16,13 +24,15 @@ export default class UserModel extends BaseModel {
             body: JSON.stringify(data),
         })
     }
-    async getUserByID(data) {
+
+    async getUserByCode(data) {
         return this.authFetch({
-            url: 'user/getUserByID',
+            url: 'user/getUserByCode',
             method: 'POST',
             body: JSON.stringify(data),
         })
     }
+
     async checkUsernameBy(data) {
         return this.authFetch({
             url: 'user/checkUsernameBy',
@@ -30,23 +40,27 @@ export default class UserModel extends BaseModel {
             body: JSON.stringify(data),
         })
     }
-    async updateUser(data) {
+
+    async updateUserBy(data) {
         return this.authFetch({
-            url: 'user/updateUser',
+            url: 'user/updateUserBy',
             method: 'POST',
             body: JSON.stringify(data),
         })
     }
+
     async insertUser(data) {
+        console.log(data);
         return this.authFetch({
             url: 'user/insertUser',
             method: 'POST',
             body: JSON.stringify(data),
         })
     }
-    async deleteUserByID(data) {
+
+    async deleteUserByCode(data) {
         return this.authFetch({
-            url: 'user/deleteUserByID',
+            url: 'user/deleteUserByCode',
             method: 'POST',
             body: JSON.stringify(data),
         })
