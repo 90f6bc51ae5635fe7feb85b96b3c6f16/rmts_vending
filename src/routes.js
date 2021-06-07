@@ -15,7 +15,10 @@ const ProductGroup = React.lazy(() => import('./views/SettingAnother/Product/Pro
 const ProductBrand = React.lazy(() => import('./views/SettingAnother/Product/ProductBrand'));
 const Stock = React.lazy(() => import('./views/SettingAnother/Stock/Stock'));
 const StockLayout = React.lazy(() => import('./views/SettingAnother/Stock/StockLayout'));
-
+const User = React.lazy(() => import('./views/SettingAnother/User/User'));
+const Premission = React.lazy(() => import('./views/SettingAnother/User/Premission'));
+const Department = React.lazy(() => import('./views/SettingAnother/User/Department'));
+const UserType = React.lazy(() => import('./views/SettingAnother/User/UserType'));
 
 const routes = [
   { path: '/', exact: true, name: 'Home', component: Home },
@@ -37,6 +40,11 @@ const routes = [
 
   { path: '/settinganother/stock/stock', name: 'Stock', component: Stock },
   { path: '/settinganother/stock/stock-layout', name: 'StockLayout', component: StockLayout },
+
+  { path: '/settinganother/user/user', name: 'User', component: User },
+  { path: '/settinganother/user/premission', name: 'Premission', component: Premission },
+  { path: '/settinganother/user/department', name: 'Department', component: Department },
+  { path: '/settinganother/user/user-type', name: 'UserType', component: UserType },
 
   { path: '/settinganother', name: 'SettingAnother', component: SettingAnother },
 

@@ -3,16 +3,17 @@ import { Col, Row, Card, CardBody, CardHeader, } from "reactstrap";
 import { Link } from 'react-router-dom'
 import { Loading, Table } from "../../../../component/revel-strap";
 import Swal from "sweetalert2";
-import GLOBAL from "../../../../GLOBAL"
-import ProductModel from "../../../../models/ProductModel";
+import StockModel from "../../../../models/StockModel";
 
-const product_model = new ProductModel();
+
+const stock_model = new StockModel();
+
 class View extends Component {
   constructor() {
     super();
     this.state = {
       loading: true,
-      product: [],
+      stock: [],
     };
   }
 
@@ -26,20 +27,19 @@ class View extends Component {
         loading: true,
       },
       async () => {
-        const product = await product_model.getProductBy({
-          params: params,
-        });
+        const stock = await stock_model.getStock({ params: params, });
 
         this.setState({
           loading: false,
-          product: product,
+          stock,
         });
+
       }
     );
   }
 
   _onDelete(code) {
-
+    console.log(code);
     Swal.fire({
       title: "Are you sure ?",
       text: "Confirm to delete this item",
@@ -49,9 +49,9 @@ class View extends Component {
 
       if (result.value) {
         this.setState({
-          // loading: true,
+          loading: true,
         }, () => {
-          product_model.deleteProductByCode({ product_code: code }).then((res) => {
+          stock_model.deleteStockByCode({ stock_code: code }).then((res) => {
 
             if (res.require) {
               Swal.fire("Success Deleted!", "", "success");
@@ -76,10 +76,10 @@ class View extends Component {
         <Loading show={this.state.loading} />
         <Card>
           <CardHeader>
-            จัดการเครื่องมือ / Product Management
+            คลัง / Stock
 
-              <Link to={`/settinganother/product/product/insert`} className="btn btn-success float-right" >
-              <i className="fa fa-plus" aria-hidden="true"></i> เครื่องมือ
+              <Link to={`/settinganother/stock/stock/insert`} className="btn btn-success float-right" >
+              <i className="fa fa-plus" aria-hidden="true"></i> คลัง
               </Link>
 
           </CardHeader>
@@ -87,20 +87,20 @@ class View extends Component {
             <Table
               onChange={(e) => this._fetchData(e)}
               showRowNo={true}
-              dataSource={this.state.product.data}
-              dataTotal={this.state.product.total}
-              rowKey="product_code"
+              dataSource={this.state.stock.data}
+              dataTotal={this.state.stock.total}
+              rowKey="stock_code"
               columns={[
                 {
-                  title: "รหัสเครื่องมือ",
-                  dataIndex: "product_code",
+                  title: "รหัสคลัง",
+                  dataIndex: "stock_code",
                   filterAble: true,
                   ellipsis: true,
-                  width: 150,
+                  width: 240,
                 },
                 {
-                  title: "ชื่อเครื่องมือ",
-                  dataIndex: "product_name",
+                  title: "ชื่อคลัง",
+                  dataIndex: "stock_name",
                   filterAble: true,
                   ellipsis: true,
                   width: 240,
@@ -110,20 +110,11 @@ class View extends Component {
                   title: "",
                   dataIndex: "",
                   render: (cell) => {
-                    const row_accessible = [
-                      <Link key="detail" to={`/settinganother/product/product/detail/${cell.product_code}`} title="รายละเอียด">
-                        <button
-                          // style={{ width: "58.6px" }}
-                          className="btn btn-outline-secondary">
-                          รายละเอียด
-                        </button>
-                      </Link>
-                    ]
-
+                    const row_accessible = [];
 
 
                     row_accessible.push(
-                      <Link key="update" to={`/settinganother/product/product/update/${cell.product_code}`} title="แก้ไขรายการ"  >
+                      <Link key="update" to={`/settinganother/stock/stock/update/${cell.stock_code}`} title="แก้ไขรายการ"  >
                         <button
                           style={{ width: "58.6px" }}
                           className="btn btn-info">
@@ -135,9 +126,10 @@ class View extends Component {
 
                     row_accessible.push(
                       <button
-                      style={{ width: "58.6px" }}
-                      className="btn btn-danger"
-                      onClick={() => this._onDelete(cell.product_code)}>
+                        style={{ width: "58.6px" }}
+                        className="btn btn-danger"
+                        onClick={() => this._onDelete(cell.stock_code)}
+                      >
                         ลบ
                       </button>
                     );
@@ -145,7 +137,7 @@ class View extends Component {
 
                     return row_accessible;
                   },
-                  width: 120,
+                  width: 80,
                 },
               ]}
             />
@@ -154,11 +146,11 @@ class View extends Component {
         <Row className="app-footer">
           <Col md={10}></Col>
           <Col md={2}>
-            <Link to={`/settinganother/product`}>
+            <Link to={`/settinganother/stock`}>
               <button
                 className="btn btn-secondary">
                 ย้อนกลับ
-              </button>
+                            </button>
             </Link>
           </Col>
         </Row>
