@@ -24,9 +24,6 @@ class ModalKeyboardNumPad extends React.Component {
             languageKeyboard: 'english',
         }
     }
-    componentDidMount(){
-        this._fetchData()
-    }
 
     componentDidUpdate(props_old) {
         if (props_old.show === false && this.props.show) {
@@ -63,7 +60,7 @@ class ModalKeyboardNumPad extends React.Component {
 
 
     _onKeyPress = button => {
-        let keyword = this.state.keyword
+        let keyword = this.state.keyword.toString()
         let space = " "
         if (button === "{shift}" || button === "{lock}") this._handleShift();
         if (button === "Th") {

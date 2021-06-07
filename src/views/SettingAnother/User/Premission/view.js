@@ -3,17 +3,17 @@ import { Col, Row, Card, CardBody, CardHeader, } from "reactstrap";
 import { Link } from 'react-router-dom'
 import { Loading, Table } from "../../../../component/revel-strap";
 import Swal from "sweetalert2";
-import StockModel from "../../../../models/StockModel";
 
+import LicenseModel from "../../../../models/LicenseModel";
 
-const stock_model = new StockModel();
+const license_model = new LicenseModel();
 
 class View extends Component {
   constructor() {
     super();
     this.state = {
       loading: true,
-      stock: [],
+      license: [],
     };
   }
 
@@ -27,19 +27,20 @@ class View extends Component {
         loading: true,
       },
       async () => {
-        const stock = await stock_model.getStock({ params: params, });
+        const license = await license_model.getLicenseBy({
+          params: params,
+        });
 
         this.setState({
           loading: false,
-          stock,
+          license: license,
         });
-
       }
     );
   }
 
   _onDelete(code) {
-    console.log(code);
+
     Swal.fire({
       title: "Are you sure ?",
       text: "Confirm to delete this item",
@@ -51,7 +52,7 @@ class View extends Component {
         this.setState({
           loading: true,
         }, () => {
-          stock_model.deleteStockByCode({ stock_code: code }).then((res) => {
+          license_model.deleteLicenseByCode({ license_code: code }).then((res) => {
 
             if (res.require) {
               Swal.fire("Success Deleted!", "", "success");
@@ -76,10 +77,10 @@ class View extends Component {
         <Loading show={this.state.loading} />
         <Card>
           <CardHeader>
-            คลัง / Stock
+            จัดการสิทธิ์การใช้งาน / License
 
-              <Link to={`/settinganother/stock/stock/insert`} className="btn btn-success float-right" >
-              <i className="fa fa-plus" aria-hidden="true"></i> คลัง
+              <Link to={`/settinganother/user/premission/insert`} className="btn btn-success float-right" >
+              <i className="fa fa-plus" aria-hidden="true"></i>เพิ่มสิทธิ์การใช้งาน
               </Link>
 
           </CardHeader>
@@ -87,24 +88,24 @@ class View extends Component {
             <Table
               onChange={(e) => this._fetchData(e)}
               showRowNo={true}
-              dataSource={this.state.stock.data}
-              dataTotal={this.state.stock.total}
-              rowKey="stock_code"
+              dataSource={this.state.license.data}
+              dataTotal={this.state.license.total}
+              rowKey="license_code"
               columns={[
                 {
-                  title: "รหัสคลัง",
-                  dataIndex: "stock_code",
+                  title: "รหัสสิทธิ์การใช้งาน",
+                  dataIndex: "license_code",
                   filterAble: true,
                   ellipsis: true,
                   width: 240,
                 },
                 {
-                  title: "ชื่อคลัง",
-                  dataIndex: "stock_name",
+                  title: "ชื้อสิทธิ์การใช้งาน",
+                  dataIndex: "license_name",
                   filterAble: true,
                   ellipsis: true,
-                  width: 240,
                 },
+
 
                 {
                   title: "",
@@ -114,7 +115,7 @@ class View extends Component {
 
 
                     row_accessible.push(
-                      <Link key="update" to={`/settinganother/stock/stock/update/${cell.stock_code}`} title="แก้ไขรายการ"  >
+                      <Link key="update" to={`/settinganother/user/premission/update/${cell.license_code}`} title="แก้ไขรายการ"  >
                         <button
                           style={{ width: "58.6px" }}
                           className="btn btn-info">
@@ -128,12 +129,11 @@ class View extends Component {
                       <button
                         style={{ width: "58.6px" }}
                         className="btn btn-danger"
-                        onClick={() => this._onDelete(cell.stock_code)}
+                        onClick={() => this._onDelete(cell.license_code)}
                       >
                         ลบ
-                      </button>
+                    </button>
                     );
-
 
                     return row_accessible;
                   },
@@ -146,11 +146,11 @@ class View extends Component {
         <Row className="app-footer">
           <Col md={10}></Col>
           <Col md={2}>
-            <Link to={`/settinganother/stock`}>
+            <Link to={`/settinganother/user`}>
               <button
                 className="btn btn-secondary">
                 ย้อนกลับ
-                            </button>
+              </button>
             </Link>
           </Col>
         </Row>

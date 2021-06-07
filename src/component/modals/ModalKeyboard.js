@@ -94,7 +94,7 @@ class ModalKeyboard extends React.Component {
         }
     }
     _onKeyPress = button => {
-        let keyword = this.state.keyword
+        let keyword = this.state.keyword.toString()
         let space = " "
         if (button === "{shift}" || button === "{lock}") this._handleShift();
         if (button === "Th") {
