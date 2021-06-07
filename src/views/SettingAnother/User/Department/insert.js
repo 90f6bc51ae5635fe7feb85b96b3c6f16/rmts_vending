@@ -17,10 +17,8 @@ import Swal from "sweetalert2"
 import { Loading } from "../../../../component/revel-strap"
 import Modalkeyboard from "../../../../component/modals/ModalKeyboard"
 
-import UserTypeModel from "../../../../models/UserTypeModel";
-
-
-const usertype_model = new UserTypeModel()
+import DepartmentModel from "../../../../models/DepartmentModel";
+const depament_model = new DepartmentModel();
 
 class Insert extends React.Component {
   constructor(props) {
@@ -30,8 +28,18 @@ class Insert extends React.Component {
       show_modal: false,
       title_modal: '',
       data_modal: '',
-      user_type_code: '',
-      user_type_name: '',
+      code_validate: {
+        value: '',
+        status: '',
+        class: '',
+        text: '',
+      },
+      department_code: '',
+      department_name: '',
+      addby: '',
+      adddate: '',
+      updateby: '',
+      lastupdate: '',
 
     }
   }
@@ -42,14 +50,14 @@ class Insert extends React.Component {
 
   async _fetchData() {
     const now = new Date()
-    const last_code = await usertype_model.generateUserTypeLastCode({
-      code: `UTC${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, "0")}`,
+     const last_code = await depament_model.getDepartmentLastCode({
+       code: `DC${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, "0")}`,
       digit: 3,
-    })
+   })
 
     this.setState({
       loading: false,
-      user_type_code: last_code.data,
+      department_code: last_code.data,
     })
   }
 
@@ -60,17 +68,17 @@ class Insert extends React.Component {
       this.setState({
         loading: true,
       }, async () => {
-        const res = await usertype_model.insertUserType({
-          user_type_code: this.state.user_type_code,
-          user_type_name: this.state.user_type_name,
-
-
+        const res = await depament_model.insertDepartment({
+          department_code: this.state.department_code,
+            department_name: this.state.department_name,
+         
+          
         })
 
         if (res.require) {
-
+          
           Swal.fire({ title: "บันทึกข้อมูลสำเร็จ !", icon: "success", })
-          this.props.history.push("/settinganother/user/user-type")
+          this.props.history.push("/settinganother/user/department")
         } else {
           this.setState({
             loading: false,
@@ -83,10 +91,10 @@ class Insert extends React.Component {
   }
 
   _checkSubmit() {
-    if (this.state.user_type_code === '') {
-      Swal.fire({ title: "กรุณาระบุรหัส !", text: "Please Enter name", icon: "warning", })
+    if (this.state.department_code === '') {
+      Swal.fire({ title: "กรุณาระบุชื่อ !", text: "Please Enter name", icon: "warning", })
       return false
-    } else if (this.state.user_type_name === '') {
+    } else if (this.state.department_code === '') {
       Swal.fire({ title: "กรุณาระบุชื่อ !", text: "Please Enter Full Name", icon: "warning", })
       return false
     } else {
@@ -95,10 +103,11 @@ class Insert extends React.Component {
   }
 
 
+
   _inputdata = (e) => {
-    if (this.state.title_modal === 'ชื่อประเภทผู้ใช้') {
+    if (this.state.title_modal === 'ชื่อแผนก') {
       this.setState({
-        user_type_name: e,
+        department_name: e,
       })
     }
   }
@@ -107,56 +116,56 @@ class Insert extends React.Component {
 
     return (
       <div>
-        <Loading show={this.state.loading} />
+    <Loading show={this.state.loading} />
         <Card>
           <CardHeader>
-            <h3 className="text-header">เพิ่ม ประเภทผู้ใช้/ Add User Type</h3>
+            <h3 className="text-header">เพิ่มแผนก / Add Department</h3>
           </CardHeader>
           <Form onSubmit={(event) => this._handleSubmit(event)}>
             <CardBody>
               <Row>
                 <Col md={4}>
-                  <label>รหัสประเภทผู้ใช้ <font color="#F00"><b>*</b></font></label>
+                  <label>รหัสแผนก <font color="#F00"><b>*</b></font></label>
                   <Input
                     type="text"
-                    value={this.state.user_type_code}
+                    value={this.state.department_code}
                     disabled
-                    onChange={(e) => this.setState({ user_type_code: e.target.value })}
-                    placeholder="รหัสประเภทผู้ใช้"
+                    onChange={(e) => this.setState({ department_code: e.target.value })}
+                    placeholder="รหัสแผนก"
                   />
-                  <p className="text-muted">Example :</p>
+                  <p className="text-muted">Example : </p>
                 </Col>
                 <Col md={4}>
                   <FormGroup>
-                    <label>ชื่อประเภทผู้ใช้ <font color="#F00"><b>*</b></font></label>
+                    <label>ชื่อผู้แผนก <font color="#F00"><b>*</b></font></label>
                     <Input
                       type="text"
-                      value={this.state.user_type_name}
-                      //   onChange={(e) => this.setState({ user_type_name: e.target.value })}
-                      placeholder="ชื่อประเภทผู้ใช้"
+                      value={this.state.department_name}
+                      // onChange={(e) => this.setState({ department_name: e.target.value })}
+                      placeholder="ชื่อแผนก"
                       onClick={() => this.setState({
                         show_modal: true,
-                        title_modal: 'ชื่อประเภทผู้ใช้',
-                        data_modal: this.state.user_type_name,
+                        title_modal: 'ชื่อแผนก',
+                        data_modal: this.state.department_name,
                       })}
                     />
                     <p className="text-muted"> Example : </p>
                   </FormGroup>
                 </Col>
-
+              
               </Row>
-
+              
             </CardBody>
             <CardFooter className="text-right">
               <Button type="submit" color="success">Save</Button>
-              <Button
-                type="reset"
-                color="danger"
-                onClick={() => this.setState({
-                  user_type_name: '',
-                })}
+              <Button 
+              type="reset" 
+              color="danger"
+              onClick={() => this.setState({
+                department_name: '',
+              })}
               >Reset</Button>
-              <Link to="/settinganother/user/user-type">
+              <Link to="/settinganother/user/department">
                 <Button type="button">Back</Button>
               </Link>
             </CardFooter>

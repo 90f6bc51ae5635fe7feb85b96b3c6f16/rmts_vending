@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardBody, CardHeader, } from "reactstrap";
+import { Card, CardBody, CardHeader, Row, Col } from "reactstrap";
 import { Link } from 'react-router-dom'
 import { Loading, Table } from "../../../../component/revel-strap";
 import Swal from "sweetalert2";
@@ -129,6 +129,17 @@ class View extends Component {
             />
           </CardBody>
         </Card>
+        <Row className="app-footer">
+          <Col md={10}></Col>
+          <Col md={2}>
+            <Link to={`/settinganother/user`}>
+              <button
+                className="btn btn-secondary">
+                ย้อนกลับ
+              </button>
+            </Link>
+          </Col>
+        </Row>
       </div>
     );
   }

@@ -1,19 +1,18 @@
 import React, { Component } from "react";
-import { Col, Row, Card, CardBody, CardHeader, } from "reactstrap";
+import { Card, CardBody, CardHeader, Row, Col } from "reactstrap";
 import { Link } from 'react-router-dom'
 import { Loading, Table } from "../../../../component/revel-strap";
 import Swal from "sweetalert2";
-import StockModel from "../../../../models/StockModel";
+import DepartmentModel from "../../../../models/DepartmentModel";
 
-
-const stock_model = new StockModel();
+const depament_model = new DepartmentModel();
 
 class View extends Component {
   constructor() {
     super();
     this.state = {
       loading: true,
-      stock: [],
+      department: [],
     };
   }
 
@@ -27,17 +26,17 @@ class View extends Component {
         loading: true,
       },
       async () => {
-        const stock = await stock_model.getStock({ params: params, });
+        const department = await depament_model.getDepartmentBy({
+          params: params,
+        });
 
         this.setState({
           loading: false,
-          stock,
+          department: department,
         });
-
       }
     );
   }
-
   _onDelete(code) {
     console.log(code);
     Swal.fire({
@@ -49,9 +48,9 @@ class View extends Component {
 
       if (result.value) {
         this.setState({
-          loading: true,
+          // loading: true,
         }, () => {
-          stock_model.deleteStockByCode({ stock_code: code }).then((res) => {
+          depament_model.deleteDepartmentByCode({ department_code: code }).then((res) => {
 
             if (res.require) {
               Swal.fire("Success Deleted!", "", "success");
@@ -76,10 +75,10 @@ class View extends Component {
         <Loading show={this.state.loading} />
         <Card>
           <CardHeader>
-            คลัง / Stock
+            จัดการแผนก / department
 
-              <Link to={`/settinganother/stock/stock/insert`} className="btn btn-success float-right" >
-              <i className="fa fa-plus" aria-hidden="true"></i> คลัง
+              <Link to={`/settinganother/user/department/insert`} className="btn btn-success float-right" >
+              <i className="fa fa-plus" aria-hidden="true"></i> แผนก
               </Link>
 
           </CardHeader>
@@ -87,20 +86,20 @@ class View extends Component {
             <Table
               onChange={(e) => this._fetchData(e)}
               showRowNo={true}
-              dataSource={this.state.stock.data}
-              dataTotal={this.state.stock.total}
-              rowKey="stock_code"
+              dataSource={this.state.department.data}
+              dataTotal={this.state.department.total}
+              rowKey="department_code"
               columns={[
                 {
-                  title: "รหัสคลัง",
-                  dataIndex: "stock_code",
+                  title: "รหัสแผนก",
+                  dataIndex: "department_code",
                   filterAble: true,
                   ellipsis: true,
                   width: 240,
                 },
                 {
-                  title: "ชื่อคลัง",
-                  dataIndex: "stock_name",
+                  title: "ชื่อแผนก",
+                  dataIndex: "department_name",
                   filterAble: true,
                   ellipsis: true,
                   width: 240,
@@ -112,9 +111,8 @@ class View extends Component {
                   render: (cell) => {
                     const row_accessible = [];
 
-
                     row_accessible.push(
-                      <Link key="update" to={`/settinganother/stock/stock/update/${cell.stock_code}`} title="แก้ไขรายการ"  >
+                      <Link key="update" to={`/settinganother/user/department/update/${cell.department_code}`} title="แก้ไขรายการ"  >
                         <button
                           style={{ width: "58.6px" }}
                           className="btn btn-info">
@@ -123,15 +121,14 @@ class View extends Component {
                       </Link>
                     );
 
-
                     row_accessible.push(
                       <button
                         style={{ width: "58.6px" }}
                         className="btn btn-danger"
-                        onClick={() => this._onDelete(cell.stock_code)}
+                        onClick={() => this._onDelete(cell.department_code)}
                       >
                         ลบ
-                      </button>
+                    </button>
                     );
 
 
@@ -146,7 +143,7 @@ class View extends Component {
         <Row className="app-footer">
           <Col md={10}></Col>
           <Col md={2}>
-            <Link to={`/settinganother/stock`}>
+            <Link to={`/settinganother/user`}>
               <button
                 className="btn btn-secondary">
                 ย้อนกลับ
