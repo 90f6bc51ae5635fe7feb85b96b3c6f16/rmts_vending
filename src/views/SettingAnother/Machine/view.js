@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Col, Row, Card, CardBody, CardImg, CardTitle, } from "reactstrap";
 import { Link } from 'react-router-dom'
-class Machine extends Component {
+class View extends Component {
     constructor() {
         super();
         this.state = {
@@ -91,4 +91,4 @@ class Machine extends Component {
     }
 }
 
-export default Machine;
+export default View;

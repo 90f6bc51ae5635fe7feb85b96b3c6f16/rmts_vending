@@ -20,7 +20,7 @@ import MachineModel from "../../../../models/MachineModel"
 import MachineTypeModel from "../../../../models/MachineTypeModel"
 import MachineBrandModel from "../../../../models/MachineBrandModel"
 import MachineModelModel from "../../../../models/MachineModelModel"
-import Modalkeyboard from "./ModalKeyboard"
+import Modalkeyboard from "../../../../component/modals/ModalKeyboard"
 
 const base_server_file = new BaseServerFile()
 const machine_model = new MachineModel()

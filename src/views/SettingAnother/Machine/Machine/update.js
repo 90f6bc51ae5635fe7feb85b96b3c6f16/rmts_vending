@@ -20,7 +20,7 @@ import MachineModel from "../../../../models/MachineModel"
 import MachineTypeModel from "../../../../models/MachineTypeModel"
 import MachineBrandModel from "../../../../models/MachineBrandModel"
 import MachineModelModel from "../../../../models/MachineModelModel"
-import Modalkeyboard from "./ModalKeyboard"
+import Modalkeyboard from "../../../../component/modals/ModalKeyboard"
 
 const base_server_file = new BaseServerFile()
 const machine_model = new MachineModel()
@@ -264,7 +264,7 @@ class Update extends React.Component {
                 <Loading show={this.state.loading} />
                 <Card>
                     <CardHeader>
-                        <h3 className="text-header">เพิ่มเครื่องจักร / Add Machine</h3>
+                        <h3 className="text-header">แก้ไขเครื่องจักร / Update Machine</h3>
                     </CardHeader>
                     <Form onSubmit={(event) => this._handleSubmit(event)}>
                         <CardBody>

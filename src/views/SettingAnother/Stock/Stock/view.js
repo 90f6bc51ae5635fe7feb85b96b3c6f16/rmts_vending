@@ -3,16 +3,17 @@ import { Col, Row, Card, CardBody, CardHeader, } from "reactstrap";
 import { Link } from 'react-router-dom'
 import { Loading, Table } from "../../../../component/revel-strap";
 import Swal from "sweetalert2";
-import GLOBAL from "../../../../GLOBAL"
-import MachineModel from "../../../../models/MachineModel";
+import StockModel from "../../../../models/StockModel";
 
-const machine_model = new MachineModel();
+
+const stock_model = new StockModel();
+
 class View extends Component {
   constructor() {
     super();
     this.state = {
       loading: true,
-      machine: [],
+      stock: [],
     };
   }
 
@@ -26,14 +27,13 @@ class View extends Component {
         loading: true,
       },
       async () => {
-        const machine = await machine_model.getMachineBy({
-          params: params,
-        });
+        const stock = await stock_model.getStock({ params: params, });
 
         this.setState({
           loading: false,
-          machine: machine,
+          stock,
         });
+
       }
     );
   }
@@ -51,7 +51,7 @@ class View extends Component {
         this.setState({
           loading: true,
         }, () => {
-          machine_model.deleteMachineByCode({ machine_code: code }).then((res) => {
+          stock_model.deleteStockByCode({ stock_code: code }).then((res) => {
 
             if (res.require) {
               Swal.fire("Success Deleted!", "", "success");
@@ -76,78 +76,36 @@ class View extends Component {
         <Loading show={this.state.loading} />
         <Card>
           <CardHeader>
-            จัดการเครื่องจักร / Machine Management
-              <Link to={`/settinganother/machine/machine/insert`} className="btn btn-success float-right" >
-              <i className="fa fa-plus" aria-hidden="true"></i> เครื่องจักร
+            คลัง / Stock
+
+              <Link to={`/settinganother/stock/stock/insert`} className="btn btn-success float-right" >
+              <i className="fa fa-plus" aria-hidden="true"></i> คลัง
               </Link>
+
           </CardHeader>
           <CardBody>
             <Table
               onChange={(e) => this._fetchData(e)}
               showRowNo={true}
-              dataSource={this.state.machine.data}
-              dataTotal={this.state.machine.total}
-              rowKey="machine_code"
+              dataSource={this.state.stock.data}
+              dataTotal={this.state.stock.total}
+              rowKey="stock_code"
               columns={[
                 {
-                  title: "รหัสเครื่องจักร",
-                  dataIndex: "machine_code",
+                  title: "รหัสคลัง",
+                  dataIndex: "stock_code",
                   filterAble: true,
                   ellipsis: true,
-                  width: 150,
+                  width: 240,
                 },
                 {
-                  title: "ประเภทเครื่องจักร",
-                  dataIndex: "machine_type_code",
+                  title: "ชื่อคลัง",
+                  dataIndex: "stock_name",
                   filterAble: true,
                   ellipsis: true,
+                  width: 240,
                 },
-                {
-                  title: "โมเดล",
-                  dataIndex: "machine_model_code",
-                  filterAble: true,
-                  ellipsis: true,
-                },
-                {
-                  title: "แบนด์",
-                  dataIndex: "machine_brand_code",
-                  filterAble: true,
-                  ellipsis: true,
-                },
-                {
-                  title: "รายละเอียด",
-                  dataIndex: "machine_detail",
-                  filterAble: true,
-                  ellipsis: true,
-                },
-                {
-                  title: 'รูป',
-                  dataIndex: 'machine_image',
-                  render: (cell) => {
 
-                    return (
-                      <img className="image-list" src={GLOBAL.BASE_URL.URL_IMG + cell} style={{ width: "80px" }} alt="machine_image" />
-                    )
-                  },
-                },
-                {
-                  title: "ชื่อ",
-                  dataIndex: "machine_name",
-                  filterAble: true,
-                  ellipsis: true,
-                },
-                {
-                  title: "สถานะ",
-                  dataIndex: "machine_status",
-                  filterAble: true,
-                  ellipsis: true,
-                },
-                {
-                  title: "หัวเจาะ",
-                  dataIndex: "machine_spindle",
-                  filterAble: true,
-                  ellipsis: true,
-                },
                 {
                   title: "",
                   dataIndex: "",
@@ -156,8 +114,7 @@ class View extends Component {
 
 
                     row_accessible.push(
-                      <Link key="update" to={`/settinganother/machine/machine/update/${cell.machine_code}`} title="แก้ไขรายการ"  >
-
+                      <Link key="update" to={`/settinganother/stock/stock/update/${cell.stock_code}`} title="แก้ไขรายการ"  >
                         <button
                           style={{ width: "58.6px" }}
                           className="btn btn-info">
@@ -168,11 +125,11 @@ class View extends Component {
 
 
                     row_accessible.push(
-
                       <button
                         style={{ width: "58.6px" }}
                         className="btn btn-danger"
-                        onClick={() => this._onDelete(cell.machine_code)}>
+                        onClick={() => this._onDelete(cell.stock_code)}
+                      >
                         ลบ
                       </button>
                     );
@@ -189,7 +146,7 @@ class View extends Component {
         <Row className="app-footer">
           <Col md={10}></Col>
           <Col md={2}>
-            <Link to={`/settinganother/machine`}>
+            <Link to={`/settinganother/stock`}>
               <button
                 className="btn btn-secondary">
                 ย้อนกลับ

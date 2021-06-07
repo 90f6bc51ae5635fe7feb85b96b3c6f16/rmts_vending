@@ -9,6 +9,12 @@ const Machine = React.lazy(() => import('./views/SettingAnother/Machine/Machine'
 const MachineModel = React.lazy(() => import('./views/SettingAnother/Machine/MachineModel'));
 const MachineBrand = React.lazy(() => import('./views/SettingAnother/Machine/MachineBrand'));
 const MachieneType = React.lazy(() => import('./views/SettingAnother/Machine/MachineType'));
+const Product = React.lazy(() => import('./views/SettingAnother/Product/Product'));
+const ProductType = React.lazy(() => import('./views/SettingAnother/Product/ProductType'));
+const ProductGroup = React.lazy(() => import('./views/SettingAnother/Product/ProductGroup'));
+const ProductBrand = React.lazy(() => import('./views/SettingAnother/Product/ProductBrand'));
+const Stock = React.lazy(() => import('./views/SettingAnother/Stock/Stock'));
+const StockLayout = React.lazy(() => import('./views/SettingAnother/Stock/StockLayout'));
 
 
 const routes = [
@@ -18,10 +24,20 @@ const routes = [
   { path: '/receivetool', name: 'ReceiveTool', component: ReceiveTool },
   { path: '/takeouttool', name: 'TakeoutTool', component: TakeoutTool },
   { path: '/settingmachine', name: 'SettingMachine', component: SettingMachine },
+
   { path: '/settinganother/machine/machinetype', name: 'MachieneType', component: MachieneType },
   { path: '/settinganother/machine/machine', name: 'Machine', component: Machine },
   { path: '/settinganother/machine/machinemodel', name: 'MachineModel', component: MachineModel },
   { path: '/settinganother/machine/machinebrand', name: 'MachineBrand', component: MachineBrand },
+
+  { path: '/settinganother/product/product', name: 'Product', component: Product },
+  { path: '/settinganother/product/product-type', name: 'ProductType', component: ProductType },
+  { path: '/settinganother/product/product-group', name: 'ProductGroup', component: ProductGroup },
+  { path: '/settinganother/product/product-brand', name: 'ProductBrand', component: ProductBrand },
+
+  { path: '/settinganother/stock/stock', name: 'Stock', component: Stock },
+  { path: '/settinganother/stock/stock-layout', name: 'StockLayout', component: StockLayout },
+
   { path: '/settinganother', name: 'SettingAnother', component: SettingAnother },
 
 ];

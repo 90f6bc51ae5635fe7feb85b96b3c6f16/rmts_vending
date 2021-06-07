@@ -14,7 +14,7 @@ import {
 import { Link } from "react-router-dom"
 import Swal from "sweetalert2"
 import { Loading } from "../../../../component/revel-strap"
-import Modalkeyboard from "./ModalKeyboard"
+import Modalkeyboard from "../../../../component/modals/ModalKeyboard"
 import MachineBrandModel from "../../../../models/MachineBrandModel";
 
 const machinebrand_model = new MachineBrandModel();

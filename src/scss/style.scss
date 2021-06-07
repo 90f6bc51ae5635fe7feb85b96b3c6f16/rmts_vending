@@ -3,6 +3,11 @@
 
 @import "scrollbar";
 
+@import "_sidebar";
+
+// If you want to add something do it here
+@import "_custom";
+
 
 @media (min-width: 1281px) {
     @import "desktops";

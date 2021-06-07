@@ -9,8 +9,7 @@ import {
     ModalHeader,
     Row,
 } from 'reactstrap'
-// import { Select, Loading, Table } from "../../../../component/revel-strap";
-// import Swal from "sweetalert2"
+
 import Keyboard from "react-simple-keyboard";
 import "react-simple-keyboard/build/css/index.css";
 

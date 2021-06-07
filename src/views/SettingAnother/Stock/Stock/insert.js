@@ -13,60 +13,63 @@ import {
 } from "reactstrap"
 import { Link } from "react-router-dom"
 import Swal from "sweetalert2"
+
 import { Loading } from "../../../../component/revel-strap"
 import Modalkeyboard from "../../../../component/modals/ModalKeyboard"
-import MachineModelModel from "../../../../models/MachineModelModel"
-const machinemodel_model = new MachineModelModel();
+
+import StockModel from "../../../../models/StockModel";
+
+const Stock_model = new StockModel();
 
 class Insert extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            data_modal: '',
-            title_modal: '',
             loading: true,
             show_modal: false,
-            machine_type_code: '',
-            machine_type_name: '',
-
+            title_modal: '',
+            data_modal: '',
+            stock_code: "",
+            stock_name: "",
+            remark: "",
         }
     }
 
     componentDidMount() {
-        this._fetchData();
+        this._fetchData()
     }
 
     async _fetchData() {
-        const now = new Date();
-        const last_code = await machinemodel_model.generateMachineModelLastCode({
-            code: `SP${now.getFullYear()}${(now.getMonth() + 1)
-                .toString()
-                .padStart(2, "0")}`,
+        const last_code = await Stock_model.generateStockLastCode({
+            code: `SC`,
             digit: 3,
         });
 
         this.setState({
             loading: false,
-            machine_model_code: last_code.data,
+            stock_code: last_code.data,
         });
     }
 
+
     _handleSubmit(event) {
-        event.preventDefault()
+        event.preventDefault();
+
         if (this._checkSubmit()) {
             this.setState(
                 {
                     loading: true,
                 },
                 async () => {
-                    const res = await machinemodel_model.insertMachineModel({
-                        machine_model_code: this.state.machine_model_code,
-                        machine_model_name: this.state.machine_model_name,
+                    const res = await Stock_model.insertStock({
+                        stock_code: this.state.stock_code,
+                        stock_name: this.state.stock_name,
+                        remark: this.state.remark,
                     });
 
                     if (res.require) {
                         Swal.fire({ title: "บันทึกข้อมูลสำเร็จ !", icon: "success" });
-                        this.props.history.push("/settinganother/machine/machinemodel");
+                        this.props.history.push("/settinganother/stock/stock");
                     } else {
                         this.setState(
                             {
@@ -86,16 +89,16 @@ class Insert extends React.Component {
     }
 
     _checkSubmit() {
-        if (this.state.machine_model_code === "") {
+        if (this.state.stock_code === "") {
             Swal.fire({
-                title: "กรุณาระบุชื่อโมเดลเครื่่องจักร !",
+                title: "กรุณาระบุรหัส !",
                 text: "Please Enter name",
                 icon: "warning",
             });
             return false;
-        } else if (this.state.machine_model_name === "") {
+        } else if (this.state.stock_name === "") {
             Swal.fire({
-                title: "กรุณาระบุชื่อโมเดลเครื่่องจักร !",
+                title: "กรุณาระบุชื่อ !",
                 text: "Please Enter Full Name",
                 icon: "warning",
             });
@@ -106,9 +109,16 @@ class Insert extends React.Component {
     }
 
     _inputdata = (e) => {
-        this.setState({
-            machine_model_name: e,
-        })
+        if (this.state.title_modal === 'ชื่อคลัง') {
+            this.setState({
+                stock_name: e,
+            })
+        }
+        else if (this.state.title_modal === 'คำอธิบาย') {
+            this.setState({
+                remark: e,
+            })
+        }
     }
 
     render() {
@@ -119,54 +129,64 @@ class Insert extends React.Component {
                 <Loading show={this.state.loading} />
                 <Card>
                     <CardHeader>
-                        <h3 className="text-header">
-                            เพิ่มโมเดลเครื่่องจักร / Add Machine Model
-                        </h3>
+                        <h3 className="text-header">เพิ่มคลัง/ Add Stock</h3>
                     </CardHeader>
                     <Form onSubmit={(event) => this._handleSubmit(event)}>
                         <CardBody>
                             <Row>
                                 <Col md={4}>
                                     <label>
-                                        รหัสโมเดลเครื่่องจักร{" "}
-                                        <font color="#F00">
+                                        รหัสคลัง
+                        <font color="#F00">
                                             <b>*</b>
                                         </font>
                                     </label>
                                     <Input
+                                        readOnly
                                         type="text"
-                                        value={this.state.machine_model_code}
-                                        disabled
+                                        value={this.state.stock_code}
                                         onChange={(e) =>
-                                            this.setState({ machine_model_code: e.target.value })
+                                            this.setState({ stock_code: e.target.value })
                                         }
-                                        placeholder="รหัสโมเดลเครื่่องจักร"
+                                        placeholder="รหัสคลัง"
                                     />
-                                    <p className="text-muted">Example : </p>
+                                    <p className="text-muted">Example : SC001</p>
                                 </Col>
                                 <Col md={4}>
                                     <FormGroup>
                                         <label>
-                                            ชื่อโมเดลเครื่่องจักร{" "}
-                                            <font color="#F00">
+                                            ชื่อคลัง
+                          <font color="#F00">
                                                 <b>*</b>
                                             </font>
                                         </label>
                                         <Input
                                             type="text"
-                                            value={this.state.machine_model_name}
-                                            placeholder="ชื่อโมเดลเครื่่องจักร"
+                                            value={this.state.stock_name}
+                                            placeholder="ชื่อคลัง"
                                             onClick={() => this.setState({
                                                 show_modal: true,
-                                                title_modal: 'ชื่อโมเดลเครื่่องจักร',
-                                                data_modal: this.state.machine_model_name,
+                                                title_modal: 'ชื่อคลัง',
+                                                data_modal: this.state.stock_name,
                                             })}
-                                        // onChange={(e) =>
-                                        //     this.setState({ machine_model_name: e.target.value })
-                                        // }
-
                                         />
-                                        <p className="text-muted"> Example : </p>
+                                        <p className="text-muted"> Example :</p>
+                                    </FormGroup>
+                                </Col>
+                                <Col md={4}>
+                                    <FormGroup>
+                                        <label>คำอธิบาย</label>
+                                        <Input
+                                            type="text"
+                                            value={this.state.remark}
+                                            placeholder="คำอธิบาย"
+                                            onClick={() => this.setState({
+                                                show_modal: true,
+                                                title_modal: 'คำอธิบาย',
+                                                data_modal: this.state.remark,
+                                            })}
+                                        />
+                                        <p className="text-muted"> Example :</p>
                                     </FormGroup>
                                 </Col>
                             </Row>
@@ -174,17 +194,26 @@ class Insert extends React.Component {
                         <CardFooter className="text-right">
                             <Button type="submit" color="success">
                                 Save
-                            </Button>
-                            <Button type="reset" color="danger">
+                  </Button>
+                            <Button
+                                type="reset"
+                                color="danger"
+                                onClick={() =>
+                                    this.setState({
+                                        stock_code: "",
+                                        stock_name: "",
+                                        remark: "",
+                                    })
+                                }
+                            >
                                 Reset
-                            </Button>
-                            <Link to="/settinganother/machine/machinemodel">
+                  </Button>
+                            <Link to="/settinganother/stock/stock">
                                 <Button type="button">Back</Button>
                             </Link>
                         </CardFooter>
                     </Form>
                 </Card>
-
                 <Modalkeyboard
                     show={this.state.show_modal}
                     data_modal={this.state.data_modal}

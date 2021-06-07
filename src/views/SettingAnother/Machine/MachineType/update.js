@@ -17,7 +17,7 @@ import Swal from "sweetalert2"
 import { Loading } from "../../../../component/revel-strap"
 
 import MachineTypeModel from "../../../../models/MachineTypeModel"
-import Modalkeyboard from "./ModalKeyboard"
+import Modalkeyboard from "../../../../component/modals/ModalKeyboard"
 
 const machinetype_model = new MachineTypeModel()
 

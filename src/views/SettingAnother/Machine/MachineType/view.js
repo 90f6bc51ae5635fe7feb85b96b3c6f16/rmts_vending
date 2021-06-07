@@ -7,7 +7,7 @@ import { Loading, Table } from "../../../../component/revel-strap";
 import MachineTypeModel from "../../../../models/MachineTypeModel";
 const machinetype_model = new MachineTypeModel();
 
-class MachineType extends Component {
+class View extends Component {
     constructor() {
         super();
         this.state = {
@@ -154,4 +154,4 @@ class MachineType extends Component {
     }
 }
 
-export default MachineType;
+export default View;

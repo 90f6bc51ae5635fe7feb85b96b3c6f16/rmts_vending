@@ -3,16 +3,16 @@ import { Col, Row, Card, CardBody, CardHeader, } from "reactstrap";
 import { Link } from 'react-router-dom'
 import { Loading, Table } from "../../../../component/revel-strap";
 import Swal from "sweetalert2";
-import GLOBAL from "../../../../GLOBAL"
-import MachineModel from "../../../../models/MachineModel";
+import ProductGroupModel from "../../../../models/ProductGroupModel";
 
-const machine_model = new MachineModel();
+const productgroup_model = new ProductGroupModel();
+
 class View extends Component {
   constructor() {
     super();
     this.state = {
       loading: true,
-      machine: [],
+      productgroup: [],
     };
   }
 
@@ -26,13 +26,13 @@ class View extends Component {
         loading: true,
       },
       async () => {
-        const machine = await machine_model.getMachineBy({
+        const productgroup = await productgroup_model.getProductGroupBy({
           params: params,
         });
 
         this.setState({
           loading: false,
-          machine: machine,
+          productgroup: productgroup,
         });
       }
     );
@@ -51,7 +51,7 @@ class View extends Component {
         this.setState({
           loading: true,
         }, () => {
-          machine_model.deleteMachineByCode({ machine_code: code }).then((res) => {
+          productgroup_model.deleteProductGroupByCode({ product_group_code: code }).then((res) => {
 
             if (res.require) {
               Swal.fire("Success Deleted!", "", "success");
@@ -76,88 +76,44 @@ class View extends Component {
         <Loading show={this.state.loading} />
         <Card>
           <CardHeader>
-            จัดการเครื่องจักร / Machine Management
-              <Link to={`/settinganother/machine/machine/insert`} className="btn btn-success float-right" >
-              <i className="fa fa-plus" aria-hidden="true"></i> เครื่องจักร
-              </Link>
+            จัดการกลุ่มเครื่องมือ / Product Group Management
+
+            <Link to={`/settinganother/product/product-group/insert`} className="btn btn-success float-right" >
+              <i className="fa fa-plus" aria-hidden="true"></i> กลุ่มเครื่องมือ
+            </Link>
+
           </CardHeader>
           <CardBody>
             <Table
               onChange={(e) => this._fetchData(e)}
               showRowNo={true}
-              dataSource={this.state.machine.data}
-              dataTotal={this.state.machine.total}
-              rowKey="machine_code"
+              dataSource={this.state.productgroup.data}
+              dataTotal={this.state.productgroup.total}
+              rowKey="product_group_code"
               columns={[
                 {
-                  title: "รหัสเครื่องจักร",
-                  dataIndex: "machine_code",
+                  title: "รหัสกลุ่มเครื่องมือ",
+                  dataIndex: "product_group_code",
                   filterAble: true,
                   ellipsis: true,
-                  width: 150,
+                  width: 240,
                 },
                 {
-                  title: "ประเภทเครื่องจักร",
-                  dataIndex: "machine_type_code",
+                  title: "ชื่อกลุ่มเครื่องมือ",
+                  dataIndex: "product_group_name",
                   filterAble: true,
                   ellipsis: true,
+                  width: 240,
                 },
-                {
-                  title: "โมเดล",
-                  dataIndex: "machine_model_code",
-                  filterAble: true,
-                  ellipsis: true,
-                },
-                {
-                  title: "แบนด์",
-                  dataIndex: "machine_brand_code",
-                  filterAble: true,
-                  ellipsis: true,
-                },
-                {
-                  title: "รายละเอียด",
-                  dataIndex: "machine_detail",
-                  filterAble: true,
-                  ellipsis: true,
-                },
-                {
-                  title: 'รูป',
-                  dataIndex: 'machine_image',
-                  render: (cell) => {
 
-                    return (
-                      <img className="image-list" src={GLOBAL.BASE_URL.URL_IMG + cell} style={{ width: "80px" }} alt="machine_image" />
-                    )
-                  },
-                },
-                {
-                  title: "ชื่อ",
-                  dataIndex: "machine_name",
-                  filterAble: true,
-                  ellipsis: true,
-                },
-                {
-                  title: "สถานะ",
-                  dataIndex: "machine_status",
-                  filterAble: true,
-                  ellipsis: true,
-                },
-                {
-                  title: "หัวเจาะ",
-                  dataIndex: "machine_spindle",
-                  filterAble: true,
-                  ellipsis: true,
-                },
                 {
                   title: "",
                   dataIndex: "",
                   render: (cell) => {
                     const row_accessible = [];
 
-
                     row_accessible.push(
-                      <Link key="update" to={`/settinganother/machine/machine/update/${cell.machine_code}`} title="แก้ไขรายการ"  >
-
+                      <Link key="update" to={`/settinganother/product/product-group/update/${cell.product_group_code}`} title="แก้ไขรายการ"  >
                         <button
                           style={{ width: "58.6px" }}
                           className="btn btn-info">
@@ -168,11 +124,12 @@ class View extends Component {
 
 
                     row_accessible.push(
-
+                      // <i style={{ fontSize: "18px", color: "red", marginLeft: "5px" }} key="delete" type="button" onClick={() => this._onDelete(cell.product_group_code)} title="ลบรายการ" className="fa fa-remove" aria-hidden="true"></i>
                       <button
                         style={{ width: "58.6px" }}
                         className="btn btn-danger"
-                        onClick={() => this._onDelete(cell.machine_code)}>
+                        onClick={() => this._onDelete(cell.product_group_code)}
+                      >
                         ลบ
                       </button>
                     );
@@ -189,11 +146,11 @@ class View extends Component {
         <Row className="app-footer">
           <Col md={10}></Col>
           <Col md={2}>
-            <Link to={`/settinganother/machine`}>
+            <Link to={`/settinganother/product`}>
               <button
                 className="btn btn-secondary">
                 ย้อนกลับ
-                            </button>
+              </button>
             </Link>
           </Col>
         </Row>

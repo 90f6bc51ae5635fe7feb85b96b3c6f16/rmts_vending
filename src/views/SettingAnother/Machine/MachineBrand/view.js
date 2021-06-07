@@ -6,7 +6,7 @@ import { Loading, Table } from "../../../../component/revel-strap";
 import MachineBrandModel from "../../../../models/MachineBrandModel";
 
 const machinebrand_model = new MachineBrandModel();
-class MachineBrand extends Component {
+class View extends Component {
     constructor() {
         super();
         this.state = {
@@ -151,7 +151,7 @@ class MachineBrand extends Component {
                             <button
                                 className="btn btn-secondary">
                                 ย้อนกลับ
-                    </button>
+                            </button>
                         </Link>
                     </Col>
                 </Row>
@@ -160,4 +160,4 @@ class MachineBrand extends Component {
     }
 }
 
-export default MachineBrand;
+export default View;

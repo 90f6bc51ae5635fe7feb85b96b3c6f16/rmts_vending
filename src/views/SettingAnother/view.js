@@ -27,6 +27,7 @@ class SettingAnother extends Component {
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>จัดการผู้ใช้งาน</CardTitle>
+                                    <CardTitle>(User)</CardTitle>
                                 </CardBody>
                             </Card>
                         </Link>
@@ -39,6 +40,7 @@ class SettingAnother extends Component {
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>จัดการคลัง</CardTitle>
+                                    <CardTitle>(Stock)</CardTitle>
                                 </CardBody>
                             </Card>
                         </Link>
@@ -54,6 +56,7 @@ class SettingAnother extends Component {
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>จัดการเครื่องจักร</CardTitle>
+                                    <CardTitle>(Machine)</CardTitle>
                                 </CardBody>
                             </Card>
                         </Link>
@@ -66,6 +69,7 @@ class SettingAnother extends Component {
                                 <CardImg variant="top" src="https://source.unsplash.com/user/erondu/600x400" />
                                 <CardBody>
                                     <CardTitle>จัดการเครื่องมือ</CardTitle>
+                                    <CardTitle>(product)</CardTitle>
                                 </CardBody>
                             </Card>
                         </Link>
