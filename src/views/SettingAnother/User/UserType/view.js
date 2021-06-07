@@ -1,19 +1,19 @@
 import React, { Component } from "react";
-import { Col, Row, Card, CardBody, CardHeader, } from "reactstrap";
+import { Card, CardBody, CardHeader, } from "reactstrap";
 import { Link } from 'react-router-dom'
 import { Loading, Table } from "../../../../component/revel-strap";
 import Swal from "sweetalert2";
-import StockModel from "../../../../models/StockModel";
+import UserTypeModel from "../../../../models/UserTypeModel";
 
 
-const stock_model = new StockModel();
+const usertype_model = new UserTypeModel()
 
 class View extends Component {
   constructor() {
     super();
     this.state = {
       loading: true,
-      stock: [],
+      usertype: [],
     };
   }
 
@@ -22,51 +22,43 @@ class View extends Component {
   };
 
   _fetchData(params = { pagination: { current: 1, pageSize: 20 } }) {
-    this.setState(
-      {
-        loading: true,
-      },
-      async () => {
-        const stock = await stock_model.getStock({ params: params, });
+    this.setState({
+      loading: true,
+    }, async () => {
+      const usertype = await usertype_model.getUserTypeBy({
+        params: params,
+      })
 
-        this.setState({
-          loading: false,
-          stock,
-        });
-
-      }
-    );
+      this.setState({
+        loading: false,
+        usertype: usertype,
+      })
+    })
   }
-
   _onDelete(code) {
-    console.log(code);
+    console.log("code", code);
     Swal.fire({
       title: "Are you sure ?",
       text: "Confirm to delete this item",
       icon: "warning",
       showCancelButton: true,
     }).then((result) => {
-
       if (result.value) {
         this.setState({
           loading: true,
-        }, () => {
-          stock_model.deleteStockByCode({ stock_code: code }).then((res) => {
-
+        }, async () => {
+          usertype_model.deleteUserTypeByCode({ user_type_code: code }).then(res => {
             if (res.require) {
-              Swal.fire("Success Deleted!", "", "success");
-              this._fetchData();
+              Swal.fire('Success Deleted!', '', 'success')
+              this._fetchData()
             } else {
-              this.setState({
-                loading: false,
-              }, () => {
-                Swal.fire("Sorry, Someting worng !", "", "error");
-              });
+              this.setState({ loading: false })
+              Swal.fire('Sorry, Someting worng !', '', 'error')
             }
-          });
-        });
+          })
+        })
       }
-    });
+    })
   }
 
   render() {
@@ -76,10 +68,9 @@ class View extends Component {
         <Loading show={this.state.loading} />
         <Card>
           <CardHeader>
-            คลัง / Stock
-
-              <Link to={`/settinganother/stock/stock/insert`} className="btn btn-success float-right" >
-              <i className="fa fa-plus" aria-hidden="true"></i> คลัง
+            จัดการประเภทผู้ใช้ / UserType
+              <Link to={`/settinganother/user/user-type/insert`} className="btn btn-success float-right">
+              <i className="fa fa-plus" aria-hidden="true"></i> เพิ่มประเภทผู้ใช้
               </Link>
 
           </CardHeader>
@@ -87,55 +78,50 @@ class View extends Component {
             <Table
               onChange={(e) => this._fetchData(e)}
               showRowNo={true}
-              dataSource={this.state.stock.data}
-              dataTotal={this.state.stock.total}
-              rowKey="stock_code"
+              dataSource={this.state.usertype.data}
+              dataTotal={this.state.usertype.total}
+              rowKey='user_type_code'
               columns={[
                 {
-                  title: "รหัสคลัง",
-                  dataIndex: "stock_code",
+                  title: "รหัสประเภท",
+                  dataIndex: "user_type_code",
                   filterAble: true,
                   ellipsis: true,
-                  width: 240,
                 },
                 {
-                  title: "ชื่อคลัง",
-                  dataIndex: "stock_name",
+                  title: "ชื่อประเภท",
+                  dataIndex: "user_type_name",
                   filterAble: true,
                   ellipsis: true,
-                  width: 240,
                 },
 
                 {
                   title: "",
                   dataIndex: "",
                   render: (cell) => {
-                    const row_accessible = [];
-
+                    const row_accessible = []
 
                     row_accessible.push(
-                      <Link key="update" to={`/settinganother/stock/stock/update/${cell.stock_code}`} title="แก้ไขรายการ"  >
+                      <Link key="update" to={`/settinganother/user/user-type/update/${cell.user_type_code}`} title="แก้ไขรายการ"  >
                         <button
                           style={{ width: "58.6px" }}
                           className="btn btn-info">
                           แก้ไข
                         </button>
                       </Link>
-                    );
-
+                    )
 
                     row_accessible.push(
                       <button
                         style={{ width: "58.6px" }}
                         className="btn btn-danger"
-                        onClick={() => this._onDelete(cell.stock_code)}
+                        onClick={() => this._onDelete(cell.user_type_code)}
                       >
                         ลบ
                       </button>
-                    );
+                    )
 
-
-                    return row_accessible;
+                    return row_accessible
                   },
                   width: 80,
                 },
@@ -143,17 +129,6 @@ class View extends Component {
             />
           </CardBody>
         </Card>
-        <Row className="app-footer">
-          <Col md={10}></Col>
-          <Col md={2}>
-            <Link to={`/settinganother/stock`}>
-              <button
-                className="btn btn-secondary">
-                ย้อนกลับ
-                            </button>
-            </Link>
-          </Col>
-        </Row>
       </div>
     );
   }
