@@ -2,7 +2,7 @@ import BaseModel from './BaseModel'
 
 export default class UserModel extends BaseModel {
     async checkLogin(data) {
-        return this.directFetch({
+        return this.authFetch({
             url: 'user/checkLogin',
             method: 'POST',
             body: JSON.stringify(data),

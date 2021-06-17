@@ -3,6 +3,7 @@ import BaseModel from './BaseModel'
 export default class ReceiveToolModel extends BaseModel {
 
     async getProductByProductCodeAndName(data) {
+        console.log(data);
         return this.authFetch({
             url: 'receivetool/getProductByProductCodeAndName',
             method: 'POST',

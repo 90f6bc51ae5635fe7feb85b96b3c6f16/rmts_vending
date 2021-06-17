@@ -2,6 +2,11 @@ import GLOBAL from '../GLOBAL'
 
 export default class BaseModel {
     async authFetch(data) {
+        console.log({
+            method: data.method,
+            headers: GLOBAL.AUTH_HEADERS,
+            body: data.body,
+        });
         const response = await fetch(GLOBAL.BASE_URL.URL + data.url, {
             method: data.method,
             headers: GLOBAL.AUTH_HEADERS,
